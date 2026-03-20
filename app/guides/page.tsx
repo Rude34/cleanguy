@@ -7,6 +7,8 @@ export const metadata = {
   title: "Guides | CleanGuy Tech",
 };
 
+export const dynamic = "force-dynamic";
+
 export default function GuidesPage() {
   const sorted = [...guides].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 
@@ -23,20 +25,15 @@ export default function GuidesPage() {
           </div>
 
           <div className="flex items-center gap-4">
-            <nav className="flex gap-3 text-sm text-slate-300">
-              <Link className="rounded-md px-2 py-1 hover:bg-slate-800 hover:text-cyan-300" href="/guides">Guides</Link>
-              <Link className="rounded-md px-2 py-1 hover:bg-slate-800 hover:text-cyan-300" href="/tools">Tools</Link>
-              <Link className="rounded-md px-2 py-1 hover:bg-slate-800 hover:text-cyan-300" href="/about">About</Link>
-            </nav>
             <TopSearch />
           </div>
         </div>
       </header>
 
-      <section className="mx-auto max-w-5xl px-6 py-12">
-        <h1 className="text-3xl font-bold">Guides</h1>
-        <p className="mt-2 max-w-2xl text-slate-600">
-          Windows troubleshooting rehberleri.
+      <section className="mx-auto max-w-6xl px-6 py-12">
+        <h1 className="text-3xl font-bold text-cyan-100">Guides</h1>
+        <p className="mt-2 max-w-2xl text-slate-300">
+          Windows troubleshooting guides.
         </p>
 
         <GuidesClient guides={sorted} />

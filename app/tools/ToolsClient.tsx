@@ -28,11 +28,11 @@ export default function ToolsClient({ tools }: Props) {
         <input
           value={search}
           onChange={(event) => setSearch(event.target.value)}
-          placeholder="Araçlar içinde ara (örn. wifi, reset, şablon)"
+          placeholder="Search tools (e.g., wifi, reset, template)"
           className="w-full max-w-sm rounded-md border border-slate-700 bg-slate-900 px-4 py-2 text-sm text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500"
         />
         <div className="text-sm text-slate-400">
-          {filtered.length}/{tools.length} sonuç gösteriliyor.
+          Showing {filtered.length} of {tools.length} tools.
         </div>
       </div>
 
@@ -54,8 +54,8 @@ export default function ToolsClient({ tools }: Props) {
       </div>
 
       {filtered.length === 0 && (
-        <div className="mt-8 rounded-xl border border-red-600 bg-red-950/30 p-4 text-sm text-red-200">
-          Aradığınız kriterde bir araç bulunamadı.
+        <div className="mt-8 rounded-xl border border-slate-700 bg-slate-900/80 p-4 text-sm text-slate-200">
+          No tools match your criteria.
         </div>
       )}
     </>

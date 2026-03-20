@@ -52,20 +52,15 @@ export default function SearchPage({ searchParams }: { searchParams: { q?: strin
             <span className="text-xs text-slate-400">Troubleshooting</span>
           </div>
           <div className="flex items-center gap-4">
-            <nav className="flex gap-3 text-sm text-slate-300">
-              <Link className="rounded-md px-2 py-1 hover:bg-slate-800 hover:text-cyan-300" href="/guides">Guides</Link>
-              <Link className="rounded-md px-2 py-1 hover:bg-slate-800 hover:text-cyan-300" href="/tools">Tools</Link>
-              <Link className="rounded-md px-2 py-1 hover:bg-slate-800 hover:text-cyan-300" href="/about">About</Link>
-            </nav>
             <TopSearch defaultValue={defaultQuery} />
           </div>
         </div>
       </header>
 
       <section className="mx-auto max-w-5xl px-6 py-12">
-        <h1 className="text-3xl font-bold text-cyan-100">Arama</h1>
+        <h1 className="text-3xl font-bold text-cyan-100">Search</h1>
         <p className="mt-2 max-w-2xl text-slate-300">
-          Rehberlerde ve araçlarda anahtar kelime arayarak hızlıca içerik bulabilirsiniz.
+          Search guides and tools by keyword to quickly find relevant content.
         </p>
 
         <SearchClient items={index} defaultQuery={defaultQuery} />

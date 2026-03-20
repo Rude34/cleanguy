@@ -6,14 +6,16 @@ export type GuideCategory =
   | "BSOD"
   | "Windows"
   | "Security"
-  | "Hardware";
+  | "Hardware"
+  | "Audio"
+  | "Apps";
 
 export type Guide = {
   slug: string; // URL: /guides/{slug}
   title: string;
   description: string;
   category: GuideCategory;
-  minutes: number; // tahmini okuma/uygulama süresi
+  minutes: number; // estimated reading/apply time
   updatedAt: string; // YYYY-MM-DD
 };
 

@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "CleanGuy Tech | Troubleshooting",
-  description: "Windows troubleshooting rehberleri ve pratik araçlar.",
+  description: "Windows troubleshooting guides and practical tools.",
 };
 
 export default function RootLayout({

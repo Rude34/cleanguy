@@ -29,9 +29,9 @@ export default function TopSearch({ defaultValue = "" }: TopSearchProps) {
           submitQuery();
         }
       }}
-      placeholder="Sorunu yaz ve Enter'a bas"
+      placeholder="Search..."
       className="w-56 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-      aria-label="Site arama"
+      aria-label="Site search"
     />
   );
 }

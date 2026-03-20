@@ -40,7 +40,7 @@ export default function SearchClient({ items, defaultQuery = "" }: SearchClientP
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Örnek: wifi, dns, sürücü..."
+          placeholder="Example: wifi, dns, driver..."
           className="w-full rounded-md border border-slate-700 bg-slate-900 px-4 py-2 text-slate-100 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500"
         />
       </div>
@@ -54,7 +54,7 @@ export default function SearchClient({ items, defaultQuery = "" }: SearchClientP
           >
             <div className="flex items-center justify-between gap-3">
               <div className="text-xs text-cyan-300 uppercase">{item.type}</div>
-              <div className="text-xs text-slate-400">{item.category || "Genel"}</div>
+              <div className="text-xs text-slate-400">{item.category || "General"}</div>
             </div>
             <div className="mt-2 text-lg font-semibold text-slate-100">{item.title}</div>
             <div className="mt-2 text-sm text-slate-300">{item.description}</div>
@@ -64,7 +64,7 @@ export default function SearchClient({ items, defaultQuery = "" }: SearchClientP
 
       {filtered.length === 0 && (
         <div className="mt-8 rounded-xl border border-red-600 bg-red-950/30 p-4 text-sm text-red-200">
-          Aradığınız bir şey bulunamadı. Lütfen kelimeleri değiştirerek tekrar deneyin.
+          No results found. Try different keywords to improve your search.
         </div>
       )}
     </>

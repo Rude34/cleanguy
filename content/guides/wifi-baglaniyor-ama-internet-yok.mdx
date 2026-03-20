@@ -1,21 +1,27 @@
 ---
-title: "Wi-Fi bağlanıyor ama internet yok"
-description: "Windows’ta bağlı görünüp internet gelmiyorsa hızlı kontrol listesi ve çözüm adımları."
+title: "Wi-Fi Connected but No Internet"
+description: "Quick checklist and practical steps when Windows shows connected Wi-Fi but internet is unavailable."
 category: "Network"
 minutes: 6
 updatedAt: "2026-03-01"
 ---
 
-## Belirti
-Wi-Fi bağlı görünüyor ama web siteleri açılmıyor.
+## Symptom
+Wi-Fi appears connected, but websites do not load.
 
-## Hızlı Kontrol
-- Modemi yeniden başlat
-- Uçak modunu aç/kapat
-- VPN/Proxy kapalı mı kontrol et
+## Quick Checks
+- Restart the modem/router
+- Toggle Airplane mode on/off
+- Confirm VPN/Proxy is disabled
 
-## Komutlar
+## Commands
 ```powershell
 ipconfig /flushdns
 ipconfig /release
 ipconfig /renew
+```
+
+## If Issue Persists
+- Set DNS manually to `8.8.8.8` and `8.8.4.4`
+- Update the network adapter driver from Device Manager
+- Restart your PC and test again

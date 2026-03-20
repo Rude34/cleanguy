@@ -1,4 +1,5 @@
 import Link from "next/link";
+import TopSearch from "../components/TopSearch";
 
 export const metadata = {
   title: "About | CleanGuy Tech",
@@ -16,11 +17,9 @@ export default function AboutPage() {
             <h1 className="text-xl font-black text-cyan-300">CleanGuy Tech</h1>
             <span className="text-xs text-slate-400">Troubleshooting</span>
           </div>
-          <nav className="flex gap-3 text-sm text-slate-300">
-            <Link className="rounded-md px-2 py-1 hover:bg-slate-800 hover:text-cyan-300 transition-colors duration-200" href="/guides">Guides</Link>
-            <Link className="rounded-md px-2 py-1 hover:bg-slate-800 hover:text-cyan-300 transition-colors duration-200" href="/tools">Tools</Link>
-            <Link className="rounded-md px-2 py-1 hover:bg-slate-800 hover:text-cyan-300 transition-colors duration-200" href="/about">About</Link>
-          </nav>
+          <div className="flex items-center gap-4">
+            <TopSearch />
+          </div>
         </div>
       </header>
 
@@ -74,9 +73,9 @@ export default function AboutPage() {
           </div>
 
           <div>
-            <h2 className="text-2xl font-semibold text-slate-900 mb-3">İletişim</h2>
+            <h2 className="text-2xl font-semibold text-slate-900 mb-3">Contact</h2>
             <p className="leading-relaxed">
-              Sorularınız, önerileriniz veya hata raporları için bizimle iletişime geçebilirsiniz. Sizin geri bildiriminiz platformu daha iyi hale getiriyor.
+              For questions, suggestions or bug reports, please reach out. Your feedback helps make the platform better.
             </p>
           </div>
         </div>
@@ -86,7 +85,7 @@ export default function AboutPage() {
               href="/guides"
               className="inline-block rounded-lg bg-linear-to-r from-cyan-500 to-blue-500 px-6 py-3 text-sm font-semibold text-white hover:from-cyan-400 hover:to-blue-400 transition-all duration-200 shadow-lg hover:shadow-cyan-500/25"
             >
-              Rehberleri Gör →
+              View guides →
             </Link>
           </div>
         </section>
@@ -94,7 +93,7 @@ export default function AboutPage() {
         <section className="border-t border-slate-800 bg-slate-950">
           <div className="mx-auto max-w-5xl px-6 py-16 text-center text-sm text-slate-400">
             <p>© {new Date().getFullYear()} CleanGuy Tech — Windows troubleshooting guides.</p>
-            <p className="mt-2 text-xs text-slate-500">Daha hızlı, daha kolay, daha etkili çözümler.</p>
+            <p className="mt-2 text-xs text-slate-500">Faster, easier, more effective troubleshooting.</p>
           </div>
         </section>
     </main>

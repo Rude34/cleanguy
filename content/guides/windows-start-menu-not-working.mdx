@@ -1,0 +1,17 @@
+---
+title: "Windows Start Menu Not Working? Quick Repair"
+description: "Restore a frozen or unresponsive Start menu using built-in Windows repair commands."
+category: "Windows"
+minutes: 5
+updatedAt: "2026-03-20"
+---
+
+When Start menu does not open or crashes:
+
+1. Press Ctrl + Shift + Esc and restart Windows Explorer from Task Manager.
+2. Open PowerShell as Administrator.
+3. Run: `sfc /scannow`
+4. Then run: `DISM /Online /Cleanup-Image /RestoreHealth`
+5. Restart computer and test Start menu again.
+
+Create a new user profile if issue remains only on one account.

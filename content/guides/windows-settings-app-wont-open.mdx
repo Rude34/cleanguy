@@ -1,0 +1,17 @@
+---
+title: "Settings App Won't Open on Windows"
+description: "Fix Windows Settings app crashes or blank page issues with system repair and reset options."
+category: "Windows"
+minutes: 5
+updatedAt: "2026-03-20"
+---
+
+If Windows Settings app closes instantly or stays blank:
+
+1. Open Command Prompt as Administrator.
+2. Run: `sfc /scannow`
+3. Run: `DISM /Online /Cleanup-Image /RestoreHealth`
+4. Reset Settings app package via PowerShell if needed.
+5. Restart system.
+
+Also check pending Windows updates and install them completely.

@@ -1,0 +1,19 @@
+---
+title: "Fix `ipconfig /release` and `ipconfig /renew` for network issues"
+description: "Use ipconfig commands to reset dynamic TCP/IP settings and restore internet access."
+category: "Network"
+minutes: 4
+updatedAt: "2026-03-20"
+---
+
+If your PC is connected but has no internet, release and renew the IP address.
+
+1. Open Command Prompt as Administrator.
+2. Type: `ipconfig /release` and press Enter.
+3. Wait until the IP is cleared.
+4. Type: `ipconfig /renew` and press Enter.
+5. Confirm there is a new IPv4 address under the active adapter.
+
+If the command fails, check cable, Wi-Fi connection and router status.
+
+**Tip:** `ipconfig /flushdns` can help after renew if DNS errors persist.

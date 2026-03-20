@@ -1,0 +1,19 @@
+---
+title: "Check Windows Firewall and security programs blocking internet"
+description: "Sometimes a firewall rule stops traffic, this guide shows how to inspect and allow needed connections."
+category: "Network"
+minutes: 4
+updatedAt: "2026-03-20"
+---
+
+If one app cannot reach internet while others can, firewall may block it.
+
+1. Open Windows Security > Firewall & network protection.
+2. Click "Allow an app through firewall".
+3. Find the app and check Private/Public as needed.
+4. If missing, click "Change settings" > "Allow another app...".
+5. Test connectivity again.
+
+For advanced users, open PowerShell as Admin and run:
+- `Get-NetFirewallRule | Where-Object { $_.Enabled -eq 'True' }`
+- inspect rules for the target profile.

@@ -1,0 +1,16 @@
+---
+title: "Reset DNS cache to solve website lookup problems"
+description: "When pages do not load but connection is active, flushing DNS often fixes name resolution issues."
+category: "Network"
+minutes: 3
+updatedAt: "2026-03-20"
+---
+
+Sometimes your device keeps outdated DNS entries and cannot resolve sites.
+
+1. Open Command Prompt as Administrator.
+2. Run: `ipconfig /flushdns`.
+3. Run: `ipconfig /registerdns` (optional).
+4. Run: `netsh winsock reset` (and reboot the computer).
+
+After reboot, test with a browser. If still blocked, try alternative DNS servers (8.8.8.8, 1.1.1.1).

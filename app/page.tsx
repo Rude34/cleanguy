@@ -37,14 +37,10 @@ export default function Home() {
       <footer className="fixed bottom-0 left-0 right-0 z-40 flex items-center justify-between border-t border-white/20 bg-black/60 px-4 py-2 text-xs text-white/90 backdrop-blur-md">
         <div className="flex items-center gap-2">
           <button className="flex items-center gap-2 rounded-sm border border-white/20 bg-white/10 px-2 py-1 text-xs hover:bg-white/20">
-            ▶ Başlat
+            ▶ Start
           </button>
-          <span>Windows 11 Pro</span>
         </div>
         <div className="flex items-center gap-4">
-          <span>🔊 Ses</span>
-          <span>🌐 Ağ</span>
-          <span>🔋 Pil</span>
           <SystemClock />
         </div>
       </footer>
