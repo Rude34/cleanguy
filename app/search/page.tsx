@@ -68,7 +68,7 @@ export default function SearchPage({ searchParams }: { searchParams: { q?: strin
           Rehberlerde ve araçlarda anahtar kelime arayarak hızlıca içerik bulabilirsiniz.
         </p>
 
-        <SearchClient items={index} />
+        <SearchClient items={index} defaultQuery={defaultQuery} />
       </section>
 
       <footer className="border-t border-slate-200">

@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useMemo, useState } from "react";
 
 type IndexedItem = {
   type: "guide" | "tool";
@@ -15,16 +14,12 @@ type IndexedItem = {
 
 type SearchClientProps = {
   items: IndexedItem[];
+  defaultQuery?: string;
 };
 
-export default function SearchClient({ items }: SearchClientProps) {
-  const searchParams = useSearchParams();
-  const paramQuery = searchParams.get("q") ?? "";
-  const [query, setQuery] = useState(paramQuery);
+export default function SearchClient({ items, defaultQuery = "" }: SearchClientProps) {
+  const [query, setQuery] = useState(defaultQuery);
 
-  useEffect(() => {
-    setQuery(paramQuery);
-  }, [paramQuery]);
 
   const normalizedQuery = query.trim().toLowerCase();
 
