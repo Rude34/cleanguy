@@ -1,0 +1,21 @@
+---
+title: "Wi-Fi bağlanıyor ama internet yok"
+description: "Windows’ta bağlı görünüp internet gelmiyorsa hızlı kontrol listesi ve çözüm adımları."
+category: "Network"
+minutes: 6
+updatedAt: "2026-03-01"
+---
+
+## Belirti
+Wi-Fi bağlı görünüyor ama web siteleri açılmıyor.
+
+## Hızlı Kontrol
+- Modemi yeniden başlat
+- Uçak modunu aç/kapat
+- VPN/Proxy kapalı mı kontrol et
+
+## Komutlar
+```powershell
+ipconfig /flushdns
+ipconfig /release
+ipconfig /renew
