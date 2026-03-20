@@ -6,29 +6,33 @@ export const metadata = {
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen bg-white text-slate-900">
-      <header className="border-b border-slate-200 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-5">
-          <Link href="/" className="font-bold tracking-tight text-lg">
-            CleanGuy Tech <span className="text-blue-600">| Troubleshooting</span>
-          </Link>
-          <nav className="flex gap-6 text-sm text-slate-600">
-            <Link className="hover:text-blue-600 transition-colors duration-200" href="/guides">Guides</Link>
-            <Link className="hover:text-blue-600 transition-colors duration-200" href="/tools">Tools</Link>
-            <Link className="hover:text-blue-600 transition-colors duration-200" href="/about">About</Link>
+    <main className="min-h-screen bg-slate-950 text-slate-100">
+      <header className="border-b border-slate-700 bg-slate-900/95 backdrop-blur-md sticky top-0 z-50">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between px-6 py-4 gap-4">
+          <div className="flex items-center gap-3">
+            <Link href="/" className="rounded-md bg-cyan-500 px-3 py-2 text-base font-bold text-slate-950 transition hover:bg-cyan-400">
+              Home
+            </Link>
+            <h1 className="text-xl font-black text-cyan-300">CleanGuy Tech</h1>
+            <span className="text-xs text-slate-400">Troubleshooting</span>
+          </div>
+          <nav className="flex gap-3 text-sm text-slate-300">
+            <Link className="rounded-md px-2 py-1 hover:bg-slate-800 hover:text-cyan-300 transition-colors duration-200" href="/guides">Guides</Link>
+            <Link className="rounded-md px-2 py-1 hover:bg-slate-800 hover:text-cyan-300 transition-colors duration-200" href="/tools">Tools</Link>
+            <Link className="rounded-md px-2 py-1 hover:bg-slate-800 hover:text-cyan-300 transition-colors duration-200" href="/about">About</Link>
           </nav>
         </div>
       </header>
 
       <section className="mx-auto max-w-3xl px-6 py-20">
         <div>
-          <h1 className="text-4xl font-bold">About Us</h1>
-          <div className="mt-2 h-1 w-20 bg-linear-to-r from-blue-600 to-cyan-600 rounded-full"></div>
+          <h1 className="text-4xl font-bold text-cyan-100">About Us</h1>
+          <div className="mt-2 h-1 w-20 bg-linear-to-r from-cyan-500 to-blue-500 rounded-full"></div>
         </div>
 
-        <div className="mt-12 space-y-8 text-slate-700">
+        <div className="mt-12 space-y-8 text-slate-300">
           <div>
-            <h2 className="text-2xl font-semibold text-slate-900 mb-3">Who are we?</h2>
+            <h2 className="text-2xl font-semibold text-cyan-200 mb-3">Who are we?</h2>
             <p className="leading-relaxed">
               CleanGuy Tech is a platform built to help Windows users resolve daily issues with quick, practical steps. We provide step‑by‑step guides for everything from network problems and performance tuning to blue screen errors and security concerns.
             </p>
@@ -78,21 +82,21 @@ export default function AboutPage() {
         </div>
 
         <div className="mt-16">
-          <Link
-            href="/guides"
-            className="inline-block rounded-lg bg-linear-to-r from-blue-600 to-blue-500 px-6 py-3 text-sm font-semibold text-white hover:from-blue-500 hover:to-blue-400 transition-all duration-200 shadow-lg hover:shadow-blue-500/25"
-          >
-            Rehberleri Gör →
-          </Link>
-        </div>
-      </section>
+            <Link
+              href="/guides"
+              className="inline-block rounded-lg bg-linear-to-r from-cyan-500 to-blue-500 px-6 py-3 text-sm font-semibold text-white hover:from-cyan-400 hover:to-blue-400 transition-all duration-200 shadow-lg hover:shadow-cyan-500/25"
+            >
+              Rehberleri Gör →
+            </Link>
+          </div>
+        </section>
 
-      <section className="border-t border-slate-200 bg-linear-to-b from-transparent to-blue-100">
-        <div className="mx-auto max-w-5xl px-6 py-16 text-center text-sm text-slate-500">
-          <p>© {new Date().getFullYear()} CleanGuy Tech — Windows troubleshooting guides.</p>
-          <p className="mt-2 text-xs text-slate-400">Daha hızlı, daha kolay, daha etkili çözümler.</p>
-        </div>
-      </section>
+        <section className="border-t border-slate-800 bg-slate-950">
+          <div className="mx-auto max-w-5xl px-6 py-16 text-center text-sm text-slate-400">
+            <p>© {new Date().getFullYear()} CleanGuy Tech — Windows troubleshooting guides.</p>
+            <p className="mt-2 text-xs text-slate-500">Daha hızlı, daha kolay, daha etkili çözümler.</p>
+          </div>
+        </section>
     </main>
   );
 }

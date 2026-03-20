@@ -1,14 +1,44 @@
 import Link from "next/link";
 import TopSearch from "../components/TopSearch";
+import SearchClient from "./SearchClient";
 import { guides } from "../../data/guides";
-import GuidesClient from "./GuidesClient";
+import { getAllTools } from "../../data/tools";
 
 export const metadata = {
-  title: "Guides | CleanGuy Tech",
+  title: "Search | CleanGuy Tech",
 };
 
-export default function GuidesPage() {
-  const sorted = [...guides].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+type IndexedItem = {
+  type: "guide" | "tool";
+  slug: string;
+  title: string;
+  description: string;
+  category?: string;
+  path: string;
+};
+
+export default function SearchPage({ searchParams }: { searchParams: { q?: string } }) {
+  const tools = getAllTools();
+  const defaultQuery = searchParams.q?.trim() ?? "";
+
+  const index: IndexedItem[] = [
+    ...guides.map((g) => ({
+      type: "guide" as const,
+      slug: g.slug,
+      title: g.title,
+      description: g.description,
+      category: g.category,
+      path: `/guides/${g.slug}`,
+    })),
+    ...tools.map((t) => ({
+      type: "tool" as const,
+      slug: t.slug,
+      title: t.title,
+      description: t.desc,
+      category: t.tag,
+      path: `/tools/${t.slug}`,
+    })),
+  ];
 
   return (
     <main className="min-h-screen bg-slate-950 text-slate-100">
@@ -21,32 +51,32 @@ export default function GuidesPage() {
             <h1 className="text-xl font-black text-cyan-300">CleanGuy Tech</h1>
             <span className="text-xs text-slate-400">Troubleshooting</span>
           </div>
-
           <div className="flex items-center gap-4">
             <nav className="flex gap-3 text-sm text-slate-300">
               <Link className="rounded-md px-2 py-1 hover:bg-slate-800 hover:text-cyan-300" href="/guides">Guides</Link>
               <Link className="rounded-md px-2 py-1 hover:bg-slate-800 hover:text-cyan-300" href="/tools">Tools</Link>
               <Link className="rounded-md px-2 py-1 hover:bg-slate-800 hover:text-cyan-300" href="/about">About</Link>
             </nav>
-            <TopSearch />
+            <TopSearch defaultValue={defaultQuery} />
           </div>
         </div>
       </header>
 
       <section className="mx-auto max-w-5xl px-6 py-12">
-        <h1 className="text-3xl font-bold">Guides</h1>
-        <p className="mt-2 max-w-2xl text-slate-600">
-          Windows troubleshooting rehberleri.
+        <h1 className="text-3xl font-bold text-cyan-100">Arama</h1>
+        <p className="mt-2 max-w-2xl text-slate-300">
+          Rehberlerde ve araçlarda anahtar kelime arayarak hızlıca içerik bulabilirsiniz.
         </p>
 
-        <GuidesClient guides={sorted} />
+        <SearchClient items={index} />
       </section>
 
       <footer className="border-t border-slate-200">
         <div className="mx-auto max-w-5xl px-6 py-10 text-sm text-slate-500">
-          © {new Date().getFullYear()} CleanGuy Tech — Windows troubleshooting guides.
+          © {new Date().getFullYear()} CleanGuy Tech — Windows troubleshooting search.
         </div>
       </footer>
     </main>
   );
 }
+
