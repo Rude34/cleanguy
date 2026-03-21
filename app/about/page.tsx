@@ -25,58 +25,50 @@ export default function AboutPage() {
 
       <section className="mx-auto max-w-3xl px-6 py-20">
         <div>
-          <h1 className="text-4xl font-bold text-cyan-100">About Us</h1>
+          <p className="text-sm font-semibold uppercase tracking-[0.3em] text-cyan-400">About</p>
+          <h1 className="mt-3 text-4xl font-bold text-cyan-100">About CleanGuy Tech</h1>
           <div className="mt-2 h-1 w-20 bg-linear-to-r from-cyan-500 to-blue-500 rounded-full"></div>
         </div>
 
-        <div className="mt-12 space-y-8 text-slate-300">
-          <div>
-            <h2 className="text-2xl font-semibold text-cyan-200 mb-3">Who are we?</h2>
-            <p className="leading-relaxed">
-              CleanGuy Tech is a platform built to help Windows users resolve daily issues with quick, practical steps. We provide step‑by‑step guides for everything from network problems and performance tuning to blue screen errors and security concerns.
+        <div className="mt-12 space-y-6 text-slate-300">
+          <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-8 shadow-lg shadow-cyan-950/20">
+            <p className="text-lg leading-8 text-slate-200">
+              CleanGuy Tech is a platform created to provide simple and effective solutions for common IT problems. The main goal of this website is to help users troubleshoot issues on their own, especially related to Windows systems and network connectivity. All guides are written in a clear and easy-to-follow format so that both beginners and intermediate users can benefit from them.
             </p>
           </div>
 
-          <div>
-            <h2 className="text-2xl font-semibold text-slate-900 mb-3">Our mission</h2>
-            <p className="leading-relaxed">
-              To give people searching for Windows fixes online short, clear, and actionable solutions instead of lengthy, complicated articles. Each guide is prepared according to these principles:
-            </p>
-            <ul className="mt-4 space-y-2 ml-4">
+          <div className="grid gap-6 md:grid-cols-2">
+            <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-7">
+              <h2 className="mb-4 text-2xl font-semibold text-cyan-200">The project</h2>
+              <p className="leading-8 text-slate-300">
+                This project is developed by Furkan Yıldırım, an Information Technology student at Ensign College. Alongside his academic studies, he is focused on building real-world skills in troubleshooting, system analysis, and web development. CleanGuy Tech is part of his internship project, where he researches technical problems and turns them into practical guides for everyday users.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-slate-800 bg-linear-to-br from-cyan-500/10 via-slate-900/80 to-blue-500/10 p-7">
+              <h2 className="mb-4 text-2xl font-semibold text-cyan-200">The vision</h2>
+              <p className="leading-8 text-slate-300">
+                The vision of CleanGuy Tech is to make technical knowledge more accessible and to help people become more confident in solving their own IT issues.
+              </p>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-cyan-500/20 bg-slate-900/50 p-7">
+            <h2 className="mb-4 text-2xl font-semibold text-cyan-100">What users can expect</h2>
+            <ul className="space-y-3 text-slate-300">
               <li className="flex items-start gap-3">
-                <span className="text-blue-600 font-bold">✓</span>
-                <span><strong>Clear:</strong> No unnecessary details, straight to the fix</span>
+                <span className="mt-1 text-cyan-400">•</span>
+                <span>Simple troubleshooting steps for Windows and connectivity issues</span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-blue-600 font-bold">✓</span>
-                <span><strong>Short:</strong> Steps you can do in 5–10 minutes</span>
+                <span className="mt-1 text-cyan-400">•</span>
+                <span>Clear explanations that are easy for beginners to follow</span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="text-blue-600 font-bold">✓</span>
-                <span><strong>Easy:</strong> Can be performed by users with basic technical knowledge</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-blue-600 font-bold">✓</span>
-                <span><strong>Safe:</strong> Correct and tested solutions</span>
+                <span className="mt-1 text-cyan-400">•</span>
+                <span>Practical guides based on real technical research and hands-on learning</span>
               </li>
             </ul>
-          </div>
-
-          <div>
-            <h2 className="text-2xl font-semibold text-slate-900 mb-3">What we offer</h2>
-            <p className="leading-relaxed">
-              <span className="font-semibold">Guides:</span> Detailed troubleshooting walkthroughs (Network, Performance, BSOD, Security, etc.)
-            </p>
-            <p className="leading-relaxed mt-2">
-              <span className="font-semibold">Tools:</span> Quick diagnostics and handy templates
-            </p>
-          </div>
-
-          <div>
-            <h2 className="text-2xl font-semibold text-slate-900 mb-3">Contact</h2>
-            <p className="leading-relaxed">
-              For questions, suggestions or bug reports, please reach out. Your feedback helps make the platform better.
-            </p>
           </div>
         </div>
 
