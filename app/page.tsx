@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FileText, Wrench, Search, Info } from "lucide-react";
+import { FileText, Wrench, Search, Info, Cloud } from "lucide-react";
 import SystemClock from "./components/SystemClock";
 
 export const metadata = {
@@ -20,12 +20,24 @@ export default function Home() {
         <div className="absolute left-5 top-5 z-20 flex flex-col items-start gap-2">
           {desktopItems.map((item) => {
             const Icon = item.icon;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="flex h-16 w-16 flex-col items-center justify-center rounded-sm bg-white/15 text-center text-sm text-white shadow-lg shadow-black/20 transition hover:bg-white/30 hover:shadow-xl"
-              >
+            return item.label === "About" ? (
+              <div key={item.href} className="flex w-16 flex-col items-start gap-2">
+                <Link href="/aws-cloud-practitioner-essentials-game" className="flex min-h-[86px] w-16 flex-col items-center justify-center rounded-sm bg-white/15 px-2 py-2 text-center text-white shadow-lg shadow-black/20 transition hover:bg-white/30 hover:shadow-xl">
+                  <Cloud size={28} strokeWidth={2} className="text-cyan-100" />
+                  <p className="mt-1 text-[8px] font-semibold uppercase tracking-[0.15em] leading-tight text-cyan-100">
+                    AWS Cloud Practitioner
+                  </p>
+                  <p className="text-[8px] font-semibold uppercase tracking-[0.15em] leading-tight text-cyan-100">
+                    Essentials Game
+                  </p>
+                </Link>
+                <Link href={item.href} className="flex h-16 w-16 flex-col items-center justify-center rounded-sm bg-white/15 text-center text-sm text-white shadow-lg shadow-black/20 transition hover:bg-white/30 hover:shadow-xl">
+                  <Icon size={28} strokeWidth={2} className="text-cyan-100" />
+                  <span className="mt-1 leading-none text-cyan-100">{item.label}</span>
+                </Link>
+              </div>
+            ) : (
+              <Link key={item.href} href={item.href} className="flex h-16 w-16 flex-col items-center justify-center rounded-sm bg-white/15 text-center text-sm text-white shadow-lg shadow-black/20 transition hover:bg-white/30 hover:shadow-xl">
                 <Icon size={28} strokeWidth={2} className="text-cyan-100" />
                 <span className="mt-1 leading-none text-cyan-100">{item.label}</span>
               </Link>
