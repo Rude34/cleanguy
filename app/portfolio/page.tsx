@@ -59,7 +59,7 @@ export default function PortfolioPage() {
           
           <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-8 shadow-lg shadow-cyan-950/20">
             <p className="text-lg leading-8 text-slate-200">
-              I'm <span className="font-semibold text-cyan-200">Furkan Yıldırım</span>, an Information Technology student at Ensign College with a passion for cybersecurity, troubleshooting, and technical support. I'm the founder of <span className="font-semibold text-cyan-200">CleanGuy Tech</span>, a platform dedicated to helping beginner and non-technical users solve technology problems with clear, easy-to-follow guides. I believe in the power of service through technology and am committed to continuous learning and growth in both my professional and spiritual journey.
+              My name is Furkan Yildirim and I am currently studying Information Technology at Ensign College. I am interested in Cybersecurity, Troubleshooting, and Technical Support. I started CleanGuy Tech to provide technology solutions for beginners and non-technical users through simple, step-by-step guides. I believe that there is great power in providing good service via technology and I intend to grow professionally and spiritually throughout my lifetime.
             </p>
           </div>
         </div>
@@ -78,7 +78,7 @@ export default function PortfolioPage() {
                 <h3 className="text-xl font-semibold text-cyan-200">Faith and Trust in God</h3>
               </div>
               <p className="text-slate-300 leading-7">
-                I believe in maintaining discipline through prayer and trust in God's guidance. I strive to balance my work, education, and personal life, knowing that true success comes from aligning my efforts with my faith and values. Every challenge is an opportunity to strengthen my relationship with God and grow as a person.
+                Prayer and belief are ways that I enforce my discipline. I will keep trying to strike the appropriate balance between my personal, work, and educational obligations, as I have learned that working in tandem with my faith and values leads me to success. Every challenge is a chance to deepen my relationship with God and mature as a person.
               </p>
             </div>
 
@@ -88,7 +88,7 @@ export default function PortfolioPage() {
                 <h3 className="text-xl font-semibold text-cyan-200">Service Through Technology</h3>
               </div>
               <p className="text-slate-300 leading-7">
-                I'm passionate about making technology accessible and understandable for everyone. Through CleanGuy Tech, I create beginner-friendly troubleshooting guides and cybersecurity awareness content. My goal is to empower non-technical users to solve their own problems and feel confident with technology.
+                With CleanGuy Tech, I'm passionate about technology and want it to be accessible and easy to use. I create content to help people understand cybersecurity and how to troubleshoot their problems without needing someone else to do it for them. I do this by creating beginner-friendly troubleshooting guides, email newsletters and writing articles that empower people who are not technical in nature, so they feel confident working with technology.
               </p>
             </div>
 
@@ -118,7 +118,7 @@ export default function PortfolioPage() {
                 <div>
                   <h3 className="text-2xl font-semibold text-cyan-200 mb-2">CleanGuy Tech</h3>
                   <p className="text-slate-300 leading-7">
-                    A beginner-friendly troubleshooting and cybersecurity awareness platform designed to help users solve common Windows and networking problems. This platform serves as both my internship project and a real-world service to help people become more confident with technology.
+                    An easy to use (user friendly) platform providing tips / solutions for common Windows and networking issues. Created as an intern project that also provides a service to help people feel more confident with technology.
                   </p>
                 </div>
               </div>
@@ -130,7 +130,7 @@ export default function PortfolioPage() {
                 <div>
                   <h3 className="text-2xl font-semibold text-cyan-200 mb-2">Azure Infrastructure Project</h3>
                   <p className="text-slate-300 leading-7">
-                    Built Microsoft Azure virtual machines, storage systems, networking configurations, and access control environments as part of my cloud infrastructure learning. This hands-on experience deepened my understanding of cloud computing and modern IT infrastructure management.
+                    This project involved building Microsoft Azure Virtual Machines, Storage, Networking Configurations, Access Control, and Learning about Cloud Infrastructure. With this experience I have developed a deeper understanding of both Cloud Computing and how to manage a Modern IT Infrastructure.
                   </p>
                 </div>
               </div>
@@ -142,7 +142,7 @@ export default function PortfolioPage() {
                 <div>
                   <h3 className="text-2xl font-semibold text-cyan-200 mb-2">Wazuh IDS Project</h3>
                   <p className="text-slate-300 leading-7">
-                    Configured and monitored an intrusion detection system environment to analyze attacks, monitor security logs, and improve my cybersecurity knowledge. This project gave me practical experience in threat detection and incident response.
+                    Configured and monitored an Intrusion Detection System to analyze both attacks and security event logs and gain practical experience in Threat Detection and Incident Response.
                   </p>
                 </div>
               </div>
@@ -163,14 +163,76 @@ export default function PortfolioPage() {
                 <Award className="text-cyan-400" size={28} />
                 <h3 className="text-2xl font-semibold text-cyan-200">Certifications</h3>
               </div>
-              <ul className="space-y-3">
-                <li className="flex items-center gap-3">
-                  <span className="text-cyan-400">✓</span>
-                  <span className="text-slate-300">Technical Support Engineer Certificate</span>
+              <ul className="space-y-3 text-sm">
+                <li className="flex items-start gap-3">
+                  <span className="text-cyan-400 mt-1">✓</span>
+                  <div>
+                    <p className="text-slate-200 font-medium">Associate of Applied Science in Information Technology</p>
+                    <p className="text-slate-400 text-xs">Ensign College • 2024-2026</p>
+                  </div>
                 </li>
-                <li className="flex items-center gap-3">
-                  <span className="text-cyan-400">✓</span>
-                  <span className="text-slate-300">IT Professional Certificate</span>
+                <li className="flex items-start gap-3">
+                  <span className="text-cyan-400 mt-1">✓</span>
+                  <div>
+                    <p className="text-slate-200 font-medium">Professionalism Certificate</p>
+                    <p className="text-slate-400 text-xs">Ensign College • May 2026</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-cyan-400 mt-1">✓</span>
+                  <div>
+                    <p className="text-slate-200 font-medium">IT Professional</p>
+                    <p className="text-slate-400 text-xs">Ensign College • October 2025</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-cyan-400 mt-1">✓</span>
+                  <div>
+                    <p className="text-slate-200 font-medium">Technical Support Engineer</p>
+                    <p className="text-slate-400 text-xs">Ensign College • May 2025</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-cyan-400 mt-1">✓</span>
+                  <div>
+                    <p className="text-slate-200 font-medium">TestOut Security Pro</p>
+                    <p className="text-slate-400 text-xs">CompTIA • May 2025</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-cyan-400 mt-1">✓</span>
+                  <div>
+                    <p className="text-slate-200 font-medium">Querying Microsoft SQL Server 2022</p>
+                    <p className="text-slate-400 text-xs">LinkedIn • May 2025</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-cyan-400 mt-1">✓</span>
+                  <div>
+                    <p className="text-slate-200 font-medium">Network Technician Career Path</p>
+                    <p className="text-slate-400 text-xs">Cisco • May 2025</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-cyan-400 mt-1">✓</span>
+                  <div>
+                    <p className="text-slate-200 font-medium">TestOut Hybrid Server Pro: Core</p>
+                    <p className="text-slate-400 text-xs">CompTIA • June 2025</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-cyan-400 mt-1">✓</span>
+                  <div>
+                    <p className="text-slate-200 font-medium">PathwayConnect Certificate</p>
+                    <p className="text-slate-400 text-xs">BYU-Pathway Worldwide</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-cyan-400 mt-1">✓</span>
+                  <div>
+                    <p className="text-slate-200 font-medium">TestOut PC Pro</p>
+                    <p className="text-slate-400 text-xs">CompTIA • February 2024</p>
+                  </div>
                 </li>
               </ul>
             </div>
@@ -219,7 +281,11 @@ export default function PortfolioPage() {
           
           <div className="rounded-2xl border border-cyan-500/20 bg-slate-900/50 p-8">
             <p className="text-lg leading-8 text-slate-300">
-              In the field of Information Technology and cybersecurity, ethical responsibility is not optional—it is fundamental. I am deeply committed to protecting user privacy and data, understanding that people trust us with their personal information. As someone who will work with administrative privileges, I recognize the importance of using those privileges ethically and responsibly, never abusing access or overstepping boundaries. Integrity is the foundation of my work; I believe in being honest about my capabilities, transparent in my actions, and accountable for my decisions. Cybersecurity responsibility means not just defending against threats, but also educating others about best practices and security awareness. Most importantly, I understand that maintaining trust is an ongoing commitment—trust takes time to build but can be lost in an instant, so I approach every interaction with the seriousness and respect it deserves.
+              Ethical Responsibility in IT and Cybersecurity: Ethical responsibility in the field of Information Technology and Cybersecurity is not an option but a necessity. I am totally dedicated to ensuring that user privacy and user data is secure because people place a great deal of trust in us; they trust us with their personal information.
+
+As someone who will have administrative privileges, I understand the importance of using those privileges ethically and with integrity. I will never abuse my access or powers nor will I overstep my boundaries. Integrity is the core of my business; I believe in being honest about what I can do, being transparent in my actions, and being held accountable for my actions.
+
+The concept of Cybersecurity responsibility is more than just defending against threats; it is to also educate others about the best practices and security awareness. Maintaining trust is also an ongoing commitment—trust takes time to earn and can be lost in an instant, so I give the same seriousness and respect to every person I interact with regardless of whether or not we differ in opinion or view.
             </p>
           </div>
         </div>
@@ -234,13 +300,13 @@ export default function PortfolioPage() {
           <div className="space-y-6">
             <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-8">
               <p className="text-lg leading-8 text-slate-300">
-                This journey in Information Technology has been transformative, both professionally and spiritually. I've learned that growth requires discipline and consistency—showing up every day, even when progress seems small, compounds into significant achievements over time. My faith has taught me that success is not just about reaching a destination, but about the person I become in the process. Every project, every certification, and every guide I create is an opportunity to grow as a technician and as a leader. I've discovered that the most meaningful work is service—using my technical knowledge to help others overcome challenges and feel more confident with technology.
+                My experience in Information Technology has changed me personally and professionally. I have learned that to develop as a person requires both discipline and consistency; by showing up each day, no matter how little progress you see, can lead to great accomplishments through time. My faith has also shown me that success is not just a goal; rather, it is about the individual I become while achieving it. Each project, certification, and tutorial I build is an opportunity for me to develop as both a technician and a leader. The most rewarding way for me to contribute to those around me is by providing them with technical assistance so that they can use their computer/technological devices and feel supported when doing so.
               </p>
             </div>
 
             <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-8">
               <p className="text-lg leading-8 text-slate-300">
-                Balancing education, career goals, and faith has taught me the importance of prioritization and trust. I cannot excel in all areas simultaneously, but I can be intentional about how I spend my time and where I invest my energy. Leadership development has shown me that true influence comes from integrity and genuine care for others' growth. I'm committed to continuing this path of professional excellence and spiritual growth, knowing that by serving others through technology, I'm contributing to something larger than myself. The future is full of possibilities, and I'm excited to see where this journey leads.
+                Prioritization and trust are essential lessons I've learned through balancing my education, career goals, and faith. Even though it is impossible to succeed in every area all at once, I can still be purposeful with how I use my time and energy. The journey of developing as a leader has taught me that authentic leadership with real influence is more about being honest and caring about the development of others than anything else. I am committed to continuing on my path to be excellent at what I do professionally and develop spiritually because I believe that by using technology to serve others, I am part of something more significant than just myself. Exciting possibilities lie ahead, and I cannot wait to see where this journey takes me.
               </p>
             </div>
           </div>
