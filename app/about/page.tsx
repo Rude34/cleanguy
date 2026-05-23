@@ -17,9 +17,15 @@ export default function AboutPage() {
             <h1 className="text-xl font-black text-cyan-300">CleanGuy Tech</h1>
             <span className="text-xs text-slate-400">Troubleshooting</span>
           </div>
-          <div className="flex items-center gap-4">
+          <nav className="flex items-center gap-4">
+            <Link href="/guides" className="text-slate-300 hover:text-cyan-300 transition text-sm font-medium">
+              Guides
+            </Link>
+            <Link href="/portfolio" className="text-slate-300 hover:text-cyan-300 transition text-sm font-medium">
+              Portfolio
+            </Link>
             <TopSearch />
-          </div>
+          </nav>
         </div>
       </header>
 
