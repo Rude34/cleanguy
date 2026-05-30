@@ -88,7 +88,7 @@ export default function PortfolioPage() {
                 <h3 className="text-xl font-semibold text-cyan-200">Service Through Technology</h3>
               </div>
               <p className="text-slate-300 leading-7">
-                With CleanGuy Tech, I'm passionate about technology and want it to be accessible and easy to use. I create content to help people understand cybersecurity and how to troubleshoot their problems without needing someone else to do it for them. I do this by creating beginner-friendly troubleshooting guides, email newsletters and writing articles that empower people who are not technical in nature, so they feel confident working with technology.
+                With CleanGuy Tech, I&apos;m passionate about technology and want it to be accessible and easy to use. I create content to help people understand cybersecurity and how to troubleshoot their problems without needing someone else to do it for them. I do this by creating beginner-friendly troubleshooting guides, email newsletters and writing articles that empower people who are not technical in nature, so they feel confident working with technology.
               </p>
             </div>
 
@@ -98,7 +98,7 @@ export default function PortfolioPage() {
                 <h3 className="text-xl font-semibold text-cyan-200">Leadership Through Communication</h3>
               </div>
               <p className="text-slate-300 leading-7">
-                I believe effective leadership is built on integrity, honest communication, and responsibility. In IT and cybersecurity, ethical behavior is paramount. I'm committed to leading by example, fostering teamwork, and using my technical knowledge responsibly to protect and serve others.
+                I believe effective leadership is built on integrity, honest communication, and responsibility. In IT and cybersecurity, ethical behavior is paramount. I&apos;m committed to leading by example, fostering teamwork, and using my technical knowledge responsibly to protect and serve others.
               </p>
             </div>
           </div>
@@ -306,9 +306,51 @@ The concept of Cybersecurity responsibility is more than just defending against 
 
             <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-8">
               <p className="text-lg leading-8 text-slate-300">
-                Prioritization and trust are essential lessons I've learned through balancing my education, career goals, and faith. Even though it is impossible to succeed in every area all at once, I can still be purposeful with how I use my time and energy. The journey of developing as a leader has taught me that authentic leadership with real influence is more about being honest and caring about the development of others than anything else. I am committed to continuing on my path to be excellent at what I do professionally and develop spiritually because I believe that by using technology to serve others, I am part of something more significant than just myself. Exciting possibilities lie ahead, and I cannot wait to see where this journey takes me.
+                Prioritization and trust are essential lessons I&apos;ve learned through balancing my education, career goals, and faith. Even though it is impossible to succeed in every area all at once, I can still be purposeful with how I use my time and energy. The journey of developing as a leader has taught me that authentic leadership with real influence is more about being honest and caring about the development of others than anything else. I am committed to continuing on my path to be excellent at what I do professionally and develop spiritually because I believe that by using technology to serve others, I am part of something more significant than just myself. Exciting possibilities lie ahead, and I cannot wait to see where this journey takes me.
               </p>
             </div>
+          </div>
+        </div>
+
+        {/* Project Refinement: CleanGuy Tech Section */}
+        <div className="mb-20">
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold text-cyan-100">Project Refinement: CleanGuy Tech</h2>
+            <div className="mt-2 h-1 w-16 bg-linear-to-r from-cyan-500 to-blue-500 rounded-full"></div>
+          </div>
+          
+          <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-8">
+            <p className="text-lg leading-8 text-slate-300">
+              By developing a Professional and Spiritual Portfolio page which will allow users to find all my technical projects, certifications, principles I live by, and other personal reflections in one place, I was able to improve the organization and design of the CleanGuy Tech website; improve the navigation and feel of the site; and connect my professional experiences/achievements to the values I use to direct my personal growth. Additionally, I placed an emphasis on making the content accessible for non-technical users so they would be able to utilize this material effectively. Ultimately, the improvements made to the website greatly increased its value from an educational perspective and will be a tremendous resource to people who rely on technology for their daily lives.
+            </p>
+          </div>
+        </div>
+
+        {/* Ethical Decision-Making and Growth Section */}
+        <div className="mb-20">
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold text-cyan-100">Ethical Decision-Making and Growth</h2>
+            <div className="mt-2 h-1 w-16 bg-linear-to-r from-cyan-500 to-blue-500 rounded-full"></div>
+          </div>
+          
+          <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-8">
+            <p className="text-lg leading-8 text-slate-300">
+              Ethical decision making can be difficult at times because of their degree of complexity; this is something I have personally experienced throughout my career. I also have learned through numerous experiences that three key components to tackling challenges face-to-face, while developing a solid working relationship: open and honest communication; being responsible for our actions and the actions of others; and finally, being accountable for our decisions. One important lesson that I take from these three components is they all encourage early communication of concerns, working collaboratively to come to a solution, and creating documentation of the issue(s) having been resolved. By doing this, we can make ethical decisions in accordance with the values of being fair, accountable and respecting one another. I have learned that in order to be an ethical leader, I must be patient, be transparent and be committed to developing a solution that is best for all parties involved, whenever possible.
+            </p>
+          </div>
+        </div>
+
+        {/* Professional and Spiritual Integration Section */}
+        <div className="mb-20">
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold text-cyan-100">Professional and Spiritual Integration</h2>
+            <div className="mt-2 h-1 w-16 bg-linear-to-r from-cyan-500 to-blue-500 rounded-full"></div>
+          </div>
+          
+          <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-8">
+            <p className="text-lg leading-8 text-slate-300">
+              According to my experience of Studying Information Technology, working together can be achieved through combining Technical Knowledge and Personal Values, this means using your Technical Knowledge to work as a team with your Personal Values. For this reason, I continue to enhance my skills in Cybersecurity, Cloud Computing, Linux Administration and Technical Support while applying the principles of Service, Integrity and Leadership on all of my projects. It is my belief that Technology is only beneficial when used to provide assistance to others, solve problems or create the opportunity for someone else to develop personally or professionally. My beliefs according to spirituality also have had a positive effect on me by encouraging me to be responsible with My Knowledge and to assist others in achieving their goals through Education, Assistance and Ethical Decision Making.
+            </p>
           </div>
         </div>
 
@@ -316,7 +358,7 @@ The concept of Cybersecurity responsibility is more than just defending against 
         <div className="mb-16 text-center">
           <div className="rounded-2xl border border-cyan-500/30 bg-linear-to-r from-cyan-500/5 to-blue-500/5 p-12">
             <p className="text-2xl font-semibold italic text-cyan-100">
-              "Technology becomes more meaningful when it is used to serve and help others."
+              &quot;Technology becomes more meaningful when it is used to serve and help others.&quot;
             </p>
           </div>
         </div>
