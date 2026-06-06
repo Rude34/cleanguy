@@ -326,6 +326,46 @@ The concept of Cybersecurity responsibility is more than just defending against 
           </div>
         </div>
 
+        {/* Christlike Attributes and Personal Warning Signs Section */}
+        <div className="mb-20">
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold text-cyan-100">Christlike Attributes and Personal Warning Signs</h2>
+            <div className="mt-2 h-1 w-16 bg-linear-to-r from-cyan-500 to-blue-500 rounded-full"></div>
+          </div>
+          
+          <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-8">
+            <p className="text-lg leading-8 text-slate-300">
+              During my time in this program, I have learned the importance of developing attributes that reflect the character of Christ, such as patience, humility, integrity, service, compassion and perseverance. These attributes have all influenced how I approach my education, my professional future and how I interact with those around me. Through my CleanGuy Tech project I have attempted to serve others by developing technology resources to assist new users in developing confidence and problem solving independently.
+            </p>
+            <p className="text-lg leading-8 text-slate-300 mt-6">
+              One personal warning sign I have identified is becoming so focused on deadlines, duties and future goals that I lose balance in the other areas of my life. Often when I have accumulated too many obligations at school, work and in my personal life, I can become impatient or frustrated by my lack of progress towards my personal goals. In addition, another personal warning sign is attempting to solve every obstacle on my own rather than seeking help or guidance from others.
+            </p>
+            <p className="text-lg leading-8 text-slate-300 mt-6">
+              To bring myself back in line, I do my best to prayerfully reflect on my day, practice good time management and remember my long term purpose. I have learned that the growth I achieve will not always be measured by what I have accomplished rather by the person I will become through the process of achieving my goals. By developing Christlike attributes and being aware of my personal warning signs, I can make ethical choices, maintain a balance within myself and move forward in my pursuit of my goals.
+            </p>
+          </div>
+        </div>
+
+        {/* Portfolio Design and Usability Enhancement Report Section */}
+        <div className="mb-20">
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold text-cyan-100">Portfolio Design and Usability Enhancement Report</h2>
+            <div className="mt-2 h-1 w-16 bg-linear-to-r from-cyan-500 to-blue-500 rounded-full"></div>
+          </div>
+          
+          <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-8">
+            <p className="text-lg leading-8 text-slate-300">
+              As part of this portfolio enhancement process, I conducted a review of the overall usability, accessibility, and organization of my Professional Growth Portfolio. During this review, I evaluated navigation, content organization, readability, responsiveness, and the overall user experience from the perspective of both technical and non-technical visitors.
+            </p>
+            <p className="text-lg leading-8 text-slate-300 mt-6">
+              Several improvements were implemented. A dedicated portfolio page was created to centralize technical projects, certifications, leadership principles, ethical reflections, and personal growth experiences. Navigation was simplified to allow visitors to quickly locate information. Content was reorganized into clearly labeled sections, improving readability and reducing confusion. Visual consistency was improved through standardized layouts, spacing, and formatting. I also verified that the portfolio remained accessible across different screen sizes and devices.
+            </p>
+            <p className="text-lg leading-8 text-slate-300 mt-6">
+              These enhancements significantly improved the user experience by making information easier to locate, understand, and navigate. The portfolio now presents a more cohesive representation of my academic achievements, technical skills, ethical development, leadership growth, and spiritual progression.
+            </p>
+          </div>
+        </div>
+
         {/* Ethical Decision-Making and Growth Section */}
         <div className="mb-20">
           <div className="mb-8">
@@ -336,6 +376,9 @@ The concept of Cybersecurity responsibility is more than just defending against 
           <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-8">
             <p className="text-lg leading-8 text-slate-300">
               Ethical decision making can be difficult at times because of their degree of complexity; this is something I have personally experienced throughout my career. I also have learned through numerous experiences that three key components to tackling challenges face-to-face, while developing a solid working relationship: open and honest communication; being responsible for our actions and the actions of others; and finally, being accountable for our decisions. One important lesson that I take from these three components is they all encourage early communication of concerns, working collaboratively to come to a solution, and creating documentation of the issue(s) having been resolved. By doing this, we can make ethical decisions in accordance with the values of being fair, accountable and respecting one another. I have learned that in order to be an ethical leader, I must be patient, be transparent and be committed to developing a solution that is best for all parties involved, whenever possible.
+            </p>
+            <p className="text-lg leading-8 text-slate-300 mt-6">
+              Thinking about ethical decisions during this entire course has reinforced my belief that just having technical knowledge isn&apos;t sufficient; to be a successful IT professional, other skills will be necessary. In the future, IT professionals may be faced with scenarios that include competing interests or priorities and deal with difficult ethical issues associated with privacy, security and accountability when making decisions. Being an ethical leader requires; transparency, integrity, respect for others, and a commitment to making decisions that will result in protecting people and businesses. I believe these values will guide my professional behavior as I continue through my career.
             </p>
           </div>
         </div>
@@ -350,6 +393,9 @@ The concept of Cybersecurity responsibility is more than just defending against 
           <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-8">
             <p className="text-lg leading-8 text-slate-300">
               According to my experience of Studying Information Technology, working together can be achieved through combining Technical Knowledge and Personal Values, this means using your Technical Knowledge to work as a team with your Personal Values. For this reason, I continue to enhance my skills in Cybersecurity, Cloud Computing, Linux Administration and Technical Support while applying the principles of Service, Integrity and Leadership on all of my projects. It is my belief that Technology is only beneficial when used to provide assistance to others, solve problems or create the opportunity for someone else to develop personally or professionally. My beliefs according to spirituality also have had a positive effect on me by encouraging me to be responsible with My Knowledge and to assist others in achieving their goals through Education, Assistance and Ethical Decision Making.
+            </p>
+            <p className="text-lg leading-8 text-slate-300 mt-6">
+              With this portfolio experience I&apos;ve gained a greater understanding of how faith and professional growth go hand in hand. My spirituality encourages me to show integrity, contribute to others, and show respect. Additionally, my work experience has given me numerous opportunities to apply those same values. The synergy of professional skills plus my deep-rooted personal values will enable me to continue to develop into both an exceptional IT professional and a capable person and leader.
             </p>
           </div>
         </div>

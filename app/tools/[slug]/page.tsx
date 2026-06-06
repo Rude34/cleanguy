@@ -3,9 +3,10 @@ import { notFound } from "next/navigation";
 import { getTool } from "../../../data/tools";
 import TopSearch from "../../components/TopSearch";
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { getTool } = await import("../../../data/tools");
-  const tool = getTool(params.slug);
+  const { slug } = await params;
+  const tool = getTool(slug);
   if (!tool) {
     return { title: "Not Found | CleanGuy Tech" };
   }

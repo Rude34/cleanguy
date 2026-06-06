@@ -5,9 +5,10 @@ import remarkGfm from "remark-gfm";
 import TopSearch from "../../components/TopSearch";
 import { getGuide } from "../../../data/guides";
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { getGuide } = await import("../../../data/guides");
-  const guide = getGuide(params.slug);
+  const { slug } = await params;
+  const guide = getGuide(slug);
   if (!guide) {
     return { title: "Not Found | CleanGuy Tech" };
   }
