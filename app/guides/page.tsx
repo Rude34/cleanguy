@@ -39,7 +39,7 @@ export default function GuidesPage() {
         <GuidesClient guides={sorted} />
       </section>
 
-      <footer className="border-t border-slate-200">
+      <footer className="border-t border-slate-700 bg-slate-950">
         <div className="mx-auto max-w-5xl px-6 py-10 text-sm text-slate-500">
           © {new Date().getFullYear()} CleanGuy Tech — Windows troubleshooting guides.
         </div>
