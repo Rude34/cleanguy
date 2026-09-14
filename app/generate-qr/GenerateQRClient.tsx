@@ -184,7 +184,7 @@ export default function GenerateQRClient() {
     const centerX = rx + cw / 2
     let y = ry + cardPadding
     for (let i = 0; i < lines.length; i++) {
-      ctx.fillText(lines[i].toUpperCase(), centerX, y)
+      ctx.fillText(lines[i], centerX, y)
       y += titleLineHeight
     }
 
