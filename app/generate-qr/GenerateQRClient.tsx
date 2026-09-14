@@ -133,7 +133,7 @@ export default function GenerateQRClient() {
     const ctx = canvas.getContext("2d")!
 
     // measure title (wrap if needed)
-    ctx.font = `bold ${titleFontSize}px sans-serif`
+    ctx.font = `bold ${titleFontSize}px "Inter", sans-serif`
     const maxTextWidth = cardWidth - cardPadding * 2
     const words = text.split(" ")
     const lines: string[] = []
@@ -180,7 +180,7 @@ export default function GenerateQRClient() {
     ctx.fillStyle = "#000"
     ctx.textAlign = "center"
     ctx.textBaseline = "top"
-    ctx.font = `bold ${titleFontSize}px sans-serif`
+    ctx.font = `bold ${titleFontSize}px "Inter", sans-serif`
     const centerX = rx + cw / 2
     let y = ry + cardPadding
     for (let i = 0; i < lines.length; i++) {
