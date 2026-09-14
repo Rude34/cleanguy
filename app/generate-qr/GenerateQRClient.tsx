@@ -126,14 +126,20 @@ export default function GenerateQRClient() {
     const padding = 24
     const cardPadding = 20
     const cardWidth = qrSize + cardPadding * 2
-    const titleFontSize = Math.max(28, Math.floor(qrSize / 8))
+    const titleFontSize = Math.max(34, Math.floor(qrSize / 7))
     const lineGap = 8
 
     const canvas = document.createElement("canvas")
     const ctx = canvas.getContext("2d")!
 
-    // measure title (wrap if needed)
-    ctx.font = `bold ${titleFontSize}px "Inter", sans-serif`
+    // ensure font is loaded, then measure title (wrap if needed)
+    try {
+      await document.fonts.load(`bold ${titleFontSize}px Poppins`)
+      await document.fonts.ready
+    } catch (e) {
+      // ignore if Fonts API not available
+    }
+    ctx.font = `bold ${titleFontSize}px "Poppins", sans-serif`
     const maxTextWidth = cardWidth - cardPadding * 2
     const words = text.split(" ")
     const lines: string[] = []
@@ -176,14 +182,19 @@ export default function GenerateQRClient() {
     ctx.lineWidth = 8
     roundRect(ctx, rx, ry, cw, ch, r, false, true)
 
-    // draw title lines
+    // draw title lines with stroke to increase weight and clarity
     ctx.fillStyle = "#000"
     ctx.textAlign = "center"
     ctx.textBaseline = "top"
-    ctx.font = `bold ${titleFontSize}px "Inter", sans-serif`
+    ctx.font = `bold ${titleFontSize}px "Poppins", sans-serif`
     const centerX = rx + cw / 2
     let y = ry + cardPadding
+    ctx.lineJoin = 'round'
     for (let i = 0; i < lines.length; i++) {
+      // stroke to make glyphs thicker and more distinguishable
+      ctx.lineWidth = 6
+      ctx.strokeStyle = "#000"
+      ctx.strokeText(lines[i], centerX, y)
       ctx.fillText(lines[i], centerX, y)
       y += titleLineHeight
     }
