@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+**/node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -19,6 +20,9 @@
 
 # production
 /build
+/bpc-management/dist/
+/public/bpc-management/
+/.data/
 
 # misc
 .DS_Store
