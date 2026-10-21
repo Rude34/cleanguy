@@ -70,7 +70,13 @@ async function writeStore(store: Store, etag: string | null) {
   const blob = await blobConfiguration();
   if (blob.useBlob) {
     const { put } = await import("@vercel/blob");
-    await put(STORAGE_KEY, JSON.stringify(store), { access: "private", contentType: "application/json", ...(etag ? { ifMatch: etag } : {}), ...blob.options });
+    await put(STORAGE_KEY, JSON.stringify(store), {
+      access: "private",
+      contentType: "application/json",
+      allowOverwrite: Boolean(etag),
+      ...(etag ? { ifMatch: etag } : {}),
+      ...blob.options,
+    });
     return;
   }
   if (process.env.NODE_ENV !== "development") throw new Error("Vercel Blob storage is not configured.");
