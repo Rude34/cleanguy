@@ -21,16 +21,39 @@ const emptyStore = (): Store => ({ profiles: [], records: [], audit: [], shifts:
 const publicProfile = ({ password_hash: _hash, ...profile }: BpcProfile) => profile;
 const key = () => process.env.BPC_SESSION_SECRET || (process.env.NODE_ENV === "development" ? "local-bpc-session-secret-change-before-production" : "");
 
-async function readStore(): Promise<{ store: Store; etag: string | null }> {
-  if (process.env.NODE_ENV === "production" && !process.env.BLOB_READ_WRITE_TOKEN && !process.env.BLOB_STORE_ID) {
-    throw new Error("Vercel Blob ayarı eksik. Vercel Storage bölümünden private Blob bağlayın.");
+function blobConfiguration() {
+  const storeId = process.env.BLOB_STORE_ID?.trim();
+  const readWriteToken = process.env.BLOB_READ_WRITE_TOKEN?.trim();
+  const oidcTokenAvailable = Boolean(process.env.VERCEL_OIDC_TOKEN?.trim());
+  const isProduction = process.env.NODE_ENV === "production";
+  const isVercel = process.env.VERCEL === "1";
+
+  if (isProduction && !storeId && !readWriteToken) {
+    throw new Error(isVercel
+      ? "Bu Vercel deployment'ında BLOB_STORE_ID bulunamadı. Blob store'un doğru Vercel projesine Production ortamında bağlı olduğunu kontrol edip yeniden deploy edin."
+      : "Blob yapılandırması eksik: BLOB_STORE_ID veya BLOB_READ_WRITE_TOKEN tanımlanmalı.");
   }
-  if (process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID) {
+
+  if (isProduction && storeId && !readWriteToken && !oidcTokenAvailable) {
+    throw new Error("BLOB_STORE_ID mevcut ancak Blob kimlik doğrulaması yok. Vercel Blob bağlantısını bu projeye ve Production ortamına bağlayın; VERCEL_OIDC_TOKEN Vercel tarafından sağlanır. BLOB_WEBHOOK_PUBLIC_KEY depolama erişim anahtarı değildir.");
+  }
+
+  const useBlob = Boolean(readWriteToken || (storeId && oidcTokenAvailable));
+  if (isProduction && storeId && !readWriteToken && oidcTokenAvailable) {
+    return { useBlob: true, options: { storeId } };
+  }
+  if (readWriteToken) return { useBlob: true, options: storeId ? { storeId } : {} };
+  return { useBlob, options: storeId && oidcTokenAvailable ? { storeId } : {} };
+}
+
+async function readStore(): Promise<{ store: Store; etag: string | null }> {
+  const blob = blobConfiguration();
+  if (blob.useBlob) {
     const { get } = await import("@vercel/blob");
     try {
-      const blob = await get(STORAGE_KEY, { access: "private", useCache: false });
-      if (!blob?.stream) return { store: emptyStore(), etag: null };
-      return { store: JSON.parse(await new Response(blob.stream).text()) as Store, etag: blob.blob.etag };
+      const result = await get(STORAGE_KEY, { access: "private", useCache: false, ...blob.options });
+      if (!result?.stream) return { store: emptyStore(), etag: null };
+      return { store: JSON.parse(await new Response(result.stream).text()) as Store, etag: result.blob.etag };
     } catch (error) {
       if (error instanceof Error && /not found|404/i.test(error.message)) return { store: emptyStore(), etag: null };
       throw error;
@@ -42,9 +65,10 @@ async function readStore(): Promise<{ store: Store; etag: string | null }> {
 }
 
 async function writeStore(store: Store, etag: string | null) {
-  if (process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID) {
+  const blob = blobConfiguration();
+  if (blob.useBlob) {
     const { put } = await import("@vercel/blob");
-    await put(STORAGE_KEY, JSON.stringify(store), { access: "private", contentType: "application/json", ...(etag ? { ifMatch: etag } : {}) });
+    await put(STORAGE_KEY, JSON.stringify(store), { access: "private", contentType: "application/json", ...(etag ? { ifMatch: etag } : {}), ...blob.options });
     return;
   }
   if (process.env.NODE_ENV !== "development") throw new Error("Vercel Blob storage is not configured.");
