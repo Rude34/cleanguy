@@ -5,6 +5,11 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   base: "/bpc-management/",
   plugins: [react(), tailwindcss()],
+  css: {
+    postcss: {
+      plugins: [],
+    },
+  },
   build: {
     outDir: "../public/bpc-management",
     emptyOutDir: true,

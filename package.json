@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "postinstall": "npm --prefix bpc-management ci",
     "dev": "concurrently -k -n site,bpc \"next dev\" \"npm --prefix bpc-management run dev\"",
     "build": "npm --prefix bpc-management run build && next build",
     "start": "next start",
