@@ -48,14 +48,28 @@ async function blobConfiguration() {
   return { useBlob, options: {} };
 }
 
-async function readStore(): Promise<{ store: Store; etag: string | null }> {
+async function readStore(): Promise<{ store: Store; etag: string | null; readDiagnostics?: { etagKind: string; contentEncoding: string } }> {
   const blob = await blobConfiguration();
   if (blob.useBlob) {
     const { get } = await import("@vercel/blob");
     try {
-      const result = await get(STORAGE_KEY, { access: "private", useCache: false, ...blob.options });
+      // Request the original representation: compression can change HTTP ETags.
+      // Keep the ETag unchanged for the conditional write; never strip W/ or quotes.
+      const result = await get(STORAGE_KEY, {
+        access: "private",
+        useCache: false,
+        headers: { "Accept-Encoding": "identity" },
+        ...blob.options,
+      });
       if (!result?.stream) return { store: emptyStore(), etag: null };
-      return { store: JSON.parse(await new Response(result.stream).text()) as Store, etag: result.blob.etag };
+      return {
+        store: JSON.parse(await new Response(result.stream).text()) as Store,
+        etag: result.blob.etag,
+        readDiagnostics: {
+          etagKind: !result.blob.etag ? "missing" : result.blob.etag.startsWith("W/") ? "weak" : "strong",
+          contentEncoding: result.headers.get("content-encoding") || "identity",
+        },
+      };
     } catch (error) {
       if (error instanceof Error && /not found|404/i.test(error.message)) return { store: emptyStore(), etag: null };
       throw error;
@@ -111,7 +125,7 @@ let queue = Promise.resolve();
 export async function updateStore<T>(mutate: (store: Store) => T | Promise<T>, operation = "store.update"): Promise<T> {
   const task = queue.then(async () => {
     for (let attempt = 1; attempt <= MAX_STORE_WRITE_ATTEMPTS; attempt += 1) {
-      const { store, etag } = await readStore();
+      const { store, etag, readDiagnostics } = await readStore();
       ensureStoreShape(store);
       const result = await mutate(store);
       try { await writeStore(store, etag); return result; }
@@ -122,12 +136,12 @@ export async function updateStore<T>(mutate: (store: Store) => T | Promise<T>, o
           throw error;
         }
         if (attempt === MAX_STORE_WRITE_ATTEMPTS) {
-          console.error("[bpc-store] write retries exhausted", { operation, attempts: attempt, ...failure });
+          console.error("[bpc-store] write retries exhausted", { operation, attempts: attempt, ...readDiagnostics, ...failure });
           throw new Error("Kayıt yoğunluk nedeniyle şu anda kaydedilemedi. Lütfen tekrar deneyin; aynı BPC kaydı mükerrer oluşturulmayacaktır.");
         }
         const ceiling = Math.min(INITIAL_RETRY_DELAY_MS * (2 ** (attempt - 1)), MAX_RETRY_DELAY_MS);
         const delayMs = Math.round(ceiling * (0.5 + Math.random() * 0.5));
-        console.warn("[bpc-store] retrying conditional write", { operation, attempt, nextAttempt: attempt + 1, delayMs, ...failure });
+        console.warn("[bpc-store] retrying conditional write", { operation, attempt, nextAttempt: attempt + 1, delayMs, ...readDiagnostics, ...failure });
         await wait(delayMs);
       }
     }
