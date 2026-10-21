@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { Link, Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import {
@@ -191,6 +191,7 @@ function InitialAdminSetup({ onCreated, notify }: { onCreated: (profile: Profile
 
 function OperatorDashboard({ profile, records, shifts, activeShiftId, refresh, notify }: { profile: Profile; records: RecordRow[]; shifts: ShiftRow[]; activeShiftId: string; refresh: () => Promise<void>; notify: (kind: ToastMessage["kind"], text: string) => void }) {
   const [table, setTable] = useState(""); const [category, setCategory] = useState(""); const [quantity, setQuantity] = useState(""); const [busy, setBusy] = useState(false); const [ownOnly, setOwnOnly] = useState(false);
+  const pendingIdempotency = useRef<{ signature: string; key: string } | null>(null);
   const activeRecords = records.filter((record) => record.shift_id === activeShiftId);
   const today = activeRecords.filter((record) => record.status === "delivered");
   const visibleRecords = ownOnly ? activeRecords.filter((record) => record.operator_id === profile.id) : activeRecords;
@@ -199,10 +200,15 @@ function OperatorDashboard({ profile, records, shifts, activeShiftId, refresh, n
     const tableNumber = Number(table);
     const parsedQuantity = Number(quantity);
     if (busy || !tables.includes(tableNumber) || !categories.includes(category as typeof categories[number]) || !quantity.trim() || !Number.isInteger(parsedQuantity) || parsedQuantity < 1 || parsedQuantity > 100000) return;
+    const signature = `${activeShiftId}:${tableNumber}:${category}:${parsedQuantity}`;
+    if (!pendingIdempotency.current || pendingIdempotency.current.signature !== signature) {
+      pendingIdempotency.current = { signature, key: crypto.randomUUID() };
+    }
     setBusy(true);
     try {
-      await api("record", "POST", { table_number: tableNumber, bpc_category: category, quantity: parsedQuantity });
-      setTable(""); setCategory(""); setQuantity(""); notify("success", "BPC teslimatı kaydedildi.");
+      const result = await api<{ duplicate: boolean }>("record", "POST", { table_number: tableNumber, bpc_category: category, quantity: parsedQuantity, idempotency_key: pendingIdempotency.current.key });
+      pendingIdempotency.current = null;
+      setTable(""); setCategory(""); setQuantity(""); notify("success", result.duplicate ? "Önceki gönderiminiz zaten kaydedilmiş; mükerrer kayıt oluşturulmadı." : "BPC teslimatı kaydedildi.");
     } catch (error) { notify("error", error instanceof Error ? error.message : "Kayıt oluşturulamadı."); }
     finally { setBusy(false); }
   }

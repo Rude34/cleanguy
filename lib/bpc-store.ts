@@ -12,7 +12,7 @@ const TABLES = Array.from({ length: 35 }, (_, index) => index + 7);
 const CATEGORIES = ["Kat0 (XL)", "Kat0 (Normal)", "Kat0 (Sağlık Güzellik)", "Zemin (Karışık)", "Zemin (Elektronik)", "Kat0-Zemin (Karışık)", "Kat0 (Seri Ürün)", "Zemin(Su-Redbull)"];
 
 export type BpcProfile = { id: string; username: string; display_name: string; role: "admin" | "operator"; is_active: boolean; password_hash: string; password_changed_at?: string; created_at: string };
-export type BpcRecord = { id: string; shift_id?: string; table_number: number; bpc_category: string; quantity: number | null; operator_id: string; status: "delivered" | "cancelled"; created_at: string; cancelled_at: string | null; cancelled_by: string | null; cancellation_reason: string | null };
+export type BpcRecord = { id: string; shift_id?: string; idempotency_key?: string; table_number: number; bpc_category: string; quantity: number | null; operator_id: string; status: "delivered" | "cancelled"; created_at: string; cancelled_at: string | null; cancelled_by: string | null; cancellation_reason: string | null };
 export type BpcAudit = { id: string; actor_id: string; action: string; record_id: string | null; created_at: string; detail: string };
 export type BpcShift = { id: string; started_at: string; ended_at: string | null; started_by: string | null; ended_by: string | null; table_staff: Record<string, string> };
 export type BpcQueueEntry = { id: string; table_number: number; added_by: string; added_at: string };
@@ -79,24 +79,56 @@ async function writeStore(store: Store, etag: string | null) {
   await writeFile(path.join(directory, "bpc.json"), JSON.stringify(store, null, 2), "utf8");
 }
 
+const MAX_STORE_WRITE_ATTEMPTS = 8;
+const INITIAL_RETRY_DELAY_MS = 50;
+const MAX_RETRY_DELAY_MS = 1200;
+
+function getWriteFailure(error: unknown) {
+  const candidate = error as { name?: unknown; code?: unknown; status?: unknown; statusCode?: unknown; message?: unknown };
+  const name = typeof candidate?.name === "string" ? candidate.name : "UnknownError";
+  const code = typeof candidate?.code === "string" ? candidate.code : undefined;
+  const status = typeof candidate?.status === "number" ? candidate.status : typeof candidate?.statusCode === "number" ? candidate.statusCode : undefined;
+  const message = typeof candidate?.message === "string" ? candidate.message : "Unknown storage error";
+  const isPrecondition = status === 412 || /precondition|etag mismatch/i.test(`${name} ${code ?? ""} ${message}`);
+  const isAlreadyExists = /already exists|blob already exists/i.test(message);
+  const safeMessage = message
+    .replace(/vercel_blob_[a-z0-9_-]+/gi, "[redacted]")
+    .replace(/Bearer\s+\S+/gi, "Bearer [redacted]")
+    .replace(/\beyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\b/g, "[redacted-jwt]")
+    .slice(0, 300);
+  return { name, code, status, reason: safeMessage, isRetryable: isPrecondition || isAlreadyExists };
+}
+
+const wait = (milliseconds: number) => new Promise((resolve) => setTimeout(resolve, milliseconds));
+
 let queue = Promise.resolve();
-export async function updateStore<T>(mutate: (store: Store) => T | Promise<T>): Promise<T> {
-  const operation = queue.then(async () => {
-    for (let attempt = 0; attempt < 5; attempt += 1) {
+export async function updateStore<T>(mutate: (store: Store) => T | Promise<T>, operation = "store.update"): Promise<T> {
+  const task = queue.then(async () => {
+    for (let attempt = 1; attempt <= MAX_STORE_WRITE_ATTEMPTS; attempt += 1) {
       const { store, etag } = await readStore();
       ensureStoreShape(store);
       const result = await mutate(store);
       try { await writeStore(store, etag); return result; }
       catch (error) {
-        const status = (error as { status?: number; statusCode?: number }).status ?? (error as { statusCode?: number }).statusCode;
-        if ((status === 412 || (error instanceof Error && /precondition|already exists/i.test(error.message))) && attempt < 4) continue;
-        throw error;
+        const failure = getWriteFailure(error);
+        if (!failure.isRetryable) {
+          console.error("[bpc-store] write failed", { operation, attempt, ...failure });
+          throw error;
+        }
+        if (attempt === MAX_STORE_WRITE_ATTEMPTS) {
+          console.error("[bpc-store] write retries exhausted", { operation, attempts: attempt, ...failure });
+          throw new Error("Kayıt yoğunluk nedeniyle şu anda kaydedilemedi. Lütfen tekrar deneyin; aynı BPC kaydı mükerrer oluşturulmayacaktır.");
+        }
+        const ceiling = Math.min(INITIAL_RETRY_DELAY_MS * (2 ** (attempt - 1)), MAX_RETRY_DELAY_MS);
+        const delayMs = Math.round(ceiling * (0.5 + Math.random() * 0.5));
+        console.warn("[bpc-store] retrying conditional write", { operation, attempt, nextAttempt: attempt + 1, delayMs, ...failure });
+        await wait(delayMs);
       }
     }
-    throw new Error("Eş zamanlı kayıt çakışması; lütfen yeniden deneyin.");
+    throw new Error("Kayıt yoğunluk nedeniyle şu anda kaydedilemedi. Lütfen tekrar deneyin; aynı BPC kaydı mükerrer oluşturulmayacaktır.");
   });
-  queue = operation.then(() => undefined, () => undefined);
-  return operation;
+  queue = task.then(() => undefined, () => undefined);
+  return task;
 }
 
 export async function getStore() {

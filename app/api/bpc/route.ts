@@ -78,19 +78,37 @@ export async function POST(request: Request) {
     const tableNumber = Number(body.table_number);
     const category = body.bpc_category;
     const quantity = body.quantity === null || body.quantity === undefined || body.quantity === "" ? null : Number(body.quantity);
+    const idempotencyKey = typeof body.idempotency_key === "string" ? body.idempotency_key : "";
     if (!allowedTables.includes(tableNumber) || typeof category !== "string" || !allowedCategories.includes(category)) return responseError("Masa veya BPC kategorisi geçersiz.");
     if (quantity === null || !Number.isInteger(quantity) || quantity < 1 || quantity > 100000) return responseError("Adet zorunludur; 1 ile 100000 arasında tam sayı girin.");
+    if (!/^[0-9a-f-]{36}$/i.test(idempotencyKey)) return responseError("Kayıt anahtarı geçersiz. Lütfen tekrar deneyin.");
     try {
-      const record = await updateStore((store) => {
+      const result = await updateStore((store) => {
+        const previous = store.records.find((record) => record.operator_id === profile.id && record.idempotency_key === idempotencyKey);
+        if (previous) {
+          if (previous.table_number !== tableNumber || previous.bpc_category !== category || previous.quantity !== quantity) {
+            const conflict = new Error("Bu istek anahtarı farklı bir BPC kaydı için kullanılmış.");
+            conflict.name = "IdempotencyConflictError";
+            throw conflict;
+          }
+          return { record: previous, duplicate: true };
+        }
         const activeShift = store.shifts.find((shift) => shift.id === store.active_shift_id && !shift.ended_at);
         if (!activeShift) throw new Error("Aktif vardiya bulunamadı.");
-        const created: BpcRecord = { id: randomUUID(), shift_id: activeShift.id, table_number: tableNumber, bpc_category: category, quantity, operator_id: profile.id, status: "delivered", created_at: new Date().toISOString(), cancelled_at: null, cancelled_by: null, cancellation_reason: null };
+        const created: BpcRecord = { id: randomUUID(), shift_id: activeShift.id, idempotency_key: idempotencyKey, table_number: tableNumber, bpc_category: category, quantity, operator_id: profile.id, status: "delivered", created_at: new Date().toISOString(), cancelled_at: null, cancelled_by: null, cancellation_reason: null };
         store.records.push(created);
         store.audit.push({ id: randomUUID(), actor_id: profile.id, action: "bpc.created", record_id: created.id, created_at: created.created_at, detail: `Masa ${tableNumber} · ${category}${quantity === null ? "" : ` · ${quantity} adet`}` });
-        return created;
-      });
-      return NextResponse.json({ record }, { status: 201, headers: { "Cache-Control": "no-store" } });
-    } catch (error) { return responseError(error instanceof Error ? error.message : "Kayıt oluşturulamadı.", 500); }
+        return { record: created, duplicate: false };
+      }, "bpc.create");
+      return NextResponse.json(result, { status: result.duplicate ? 200 : 201, headers: { "Cache-Control": "no-store" } });
+    } catch (error) {
+      const name = error instanceof Error ? error.name : "";
+      const message = error instanceof Error ? error.message : "Kayıt oluşturulamadı.";
+      if (name === "IdempotencyConflictError") return responseError(message, 409);
+      if (error instanceof Error && /Kayıt yoğunluk/.test(error.message)) return responseError(error.message, 503);
+      console.error("[bpc-api] record creation failed", { operation: "bpc.create", operatorId: profile.id, tableNumber, category, errorName: name || "UnknownError" });
+      return responseError("BPC kaydı kaydedilemedi. Lütfen tekrar deneyin. Aynı gönderimi tekrar denerseniz kayıt mükerrer oluşturulmaz.", 500);
+    }
   }
 
   if (action === "queue-add") {
