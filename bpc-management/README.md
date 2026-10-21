@@ -23,7 +23,7 @@ Yerel kayıtlar `.data/bpc.json` dosyasına yazılır ve Git dışında tutulur.
 
 BPC için ayrı bir statik proje oluşturmayın. Kök `npm run build`, Vite çıktısını `public/bpc-management/` içine üretir ve ardından var olan Next.js sitesini derler. Next.js catch-all route bu alt yolda `index.html` döndürür; sitenin ana sayfası ve diğer mevcut yollar değişmez.
 
-1. Vercel’de mevcut CleanGuy Tech projesini açın. **Storage → Create Store → Blob** üzerinden erişimi **Private** olan bir Blob store oluşturup bu projeye Production ortamında bağlayın. Vercel’in eklediği Blob ortam değişkenleri sunucuda kalmalıdır.
+1. Vercel’de mevcut CleanGuy Tech projesini açın. **Storage → Create Store → Blob** üzerinden erişimi **Private** olan bir Blob store oluşturup bu projeye **Production** ortamında bağlayın. Bağlantıda `BLOB_STORE_ID` görünmelidir. Vercel OIDC token’ı deploy derleme ortamında env değişkeni olarak sunabilir; Function çalışırken ise request context’teki `x-vercel-oidc-token` başlığından alınır. Uygulama bunu `@vercel/oidc` helper’ıyla her server isteğinde okur ve `@vercel/blob` çağrısına sunucu tarafında verir. `VERCEL_OIDC_TOKEN` değerini manuel tanımlamayın/kopyalamayın ve `BLOB_WEBHOOK_PUBLIC_KEY` değerini storage token’ı olarak kullanmayın.
 2. **Project Settings → Environment Variables** kısmına `BPC_SESSION_SECRET` ve `BPC_SETUP_KEY` adlarında iki ayrı gizli değer ekleyin. Her biri için uzun ve tahmin edilemez değer kullanın. PowerShell ile değer üretme örneği:
 
    ```powershell
@@ -31,7 +31,7 @@ BPC için ayrı bir statik proje oluşturmayın. Kök `npm run build`, Vite çı
    ```
 
    Her komutu ayrı çalıştırıp bir değerini `BPC_SESSION_SECRET`, diğerini `BPC_SETUP_KEY` için kaydedin. Bunları frontend `VITE_` değişkeni yapmayın.
-3. Değişiklikleri mevcut Vercel projesine deploy edin. Ardından `https://cleanguy.tech/bpc-management/` adresini açın. İlk yönetici hesabını ve parolasını seçip `BPC_SETUP_KEY` değerini ilk kurulum anahtarı alanına girin. İlk yönetici oluşturulunca kurulum API’si yeniden hesap oluşturmayı reddeder.
+3. Blob deposunun **Projects** bağlantısında doğru `cleanguy` projesi ile **Production** ortamını seçili doğrulayın. Bağlantıyı değiştirdiyseniz değişiklikten sonra yeni Production deployment oluşturun; eski deployment’a sonradan OIDC bağlamı eklenmez. Ardından `https://cleanguy.tech/bpc-management/` adresini açın. İlk yönetici hesabını ve parolasını seçip `BPC_SETUP_KEY` değerini ilk kurulum anahtarı alanına girin. İlk yönetici oluşturulunca kurulum API’si yeniden hesap oluşturmayı reddeder.
 4. Yönetici olarak giriş yapıp üç operatörü oluşturun. Kullanıcı adı ve parolaları doğrudan operatörlere iletin.
 
 ## Güvenlik ve veri
