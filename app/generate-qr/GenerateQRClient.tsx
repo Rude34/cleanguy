@@ -58,14 +58,13 @@ export default function GenerateQRClient() {
 
 
   async function handleCopySingle(dataUrl: string) {
-    if (!navigator.clipboard || (window as any).ClipboardItem === undefined) {
+    if (!navigator.clipboard?.write || typeof ClipboardItem === "undefined") {
       alert("Tarayıcınız görsel kopyalamayı desteklemiyor. Lütfen Chrome/MSEdge kullanın.")
       return
     }
     try {
-      const res = await fetch(dataUrl)
-      const blob = await res.blob()
-      const item = new (window as any).ClipboardItem({ [blob.type]: blob })
+      const blob = fetch(dataUrl).then((res) => res.blob())
+      const item = new ClipboardItem({ "image/png": blob })
       await navigator.clipboard.write([item])
       alert("Görsel kopyalandı. Şimdi yapıştırabilirsiniz.")
     } catch (e) {
@@ -75,33 +74,66 @@ export default function GenerateQRClient() {
   }
 
   async function handleCopyAll() {
-    if (!navigator.clipboard || (window as any).ClipboardItem === undefined) {
-      alert("Tarayıcınız çoklu görsel kopyalamayı desteklemiyor. Lütfen Chrome/MSEdge kullanın.")
+    if (!previews.length || copying) return
+    if (!navigator.clipboard?.write || typeof ClipboardItem === "undefined") {
+      alert("Tarayıcınız görsel kopyalamayı desteklemiyor. PNG veya ZIP olarak indirebilirsiniz.")
       return
     }
     setCopying(true)
     try {
-      const lines = input
-        .split(/\r?\n/)
-        .map((l) => l.trim())
-        .filter(Boolean)
-      const items: any[] = []
-      for (let i = 0; i < lines.length; i++) {
-        const dataUrl = await generateCompositeDataUrl(lines[i], 300)
-        const res = await fetch(dataUrl)
-        const blob = await res.blob()
-        items.push(new (window as any).ClipboardItem({ [blob.type]: blob }))
-        // small delay
-        await new Promise((r) => setTimeout(r, 80))
-      }
-      await navigator.clipboard.write(items)
-      alert("Tüm görseller kopyalandı. Şimdi yapıştırabilirsiniz.")
+      // Start the write during the click gesture, before image decoding awaits.
+      // One PNG works even when the clipboard cannot hold multiple native items.
+      await navigator.clipboard.write([
+        new ClipboardItem({ "image/png": createPreviewSheet(previews.map((p) => p.dataUrl)) }),
+      ])
+      alert(`${previews.length} QR kod tek görsel olarak kopyalandı. Şimdi yapıştırabilirsiniz.`)
     } catch (e) {
       console.error(e)
-      alert("Çoklu kopyalama başarısız. Tarayıcı desteklemiyor veya izin vermiyor.")
+      alert("Kopyalama başarısız. Site için pano iznini kontrol edin. Çok fazla QR varsa daha küçük gruplar halinde kopyalayın veya ZIP olarak indirin.")
     } finally {
       setCopying(false)
     }
+  }
+
+  async function createPreviewSheet(dataUrls: string[]): Promise<Blob> {
+    if (dataUrls.length === 1) return (await fetch(dataUrls[0])).blob()
+    const images = await Promise.all(dataUrls.map((src) => new Promise<HTMLImageElement>((resolve, reject) => {
+      const image = new Image()
+      image.onload = () => resolve(image)
+      image.onerror = () => reject(new Error("QR görseli yüklenemedi"))
+      image.src = src
+    })))
+    const gap = 24
+    const columns = Math.min(4, images.length)
+    const cellWidth = Math.max(...images.map((image) => image.naturalWidth))
+    const rowHeights: number[] = []
+    images.forEach((image, index) => {
+      const row = Math.floor(index / columns)
+      rowHeights[row] = Math.max(rowHeights[row] || 0, image.naturalHeight)
+    })
+    const width = columns * cellWidth + (columns + 1) * gap
+    const height = rowHeights.reduce((sum, value) => sum + value + gap, gap)
+    // Avoid silently producing a blank image beyond browser canvas limits.
+    if (width > 16384 || height > 16384 || width * height > 32_000_000) {
+      throw new Error("QR görselleri tek panoya sığmayacak kadar büyük")
+    }
+    const canvas = document.createElement("canvas")
+    canvas.width = width
+    canvas.height = height
+    const ctx = canvas.getContext("2d")
+    if (!ctx) throw new Error("Görsel oluşturulamadı")
+    ctx.fillStyle = "#ffffff"
+    ctx.fillRect(0, 0, width, height)
+    let y = gap
+    rowHeights.forEach((rowHeight, row) => {
+      images.slice(row * columns, (row + 1) * columns).forEach((image, column) => {
+        ctx.drawImage(image, gap + column * (cellWidth + gap), y)
+      })
+      y += rowHeight + gap
+    })
+    return new Promise((resolve, reject) => {
+      canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("PNG oluşturulamadı")), "image/png")
+    })
   }
 
   async function handleDownloadSingle(dataUrl: string, filename: string) {
@@ -246,10 +278,11 @@ export default function GenerateQRClient() {
         <button onClick={handleDownloadZip} disabled={loading || !input.trim()} className="px-4 py-2 bg-blue-600 text-white rounded">
           {loading ? "Oluşturuluyor..." : "Tümünü ZIP İndir"}
         </button>
-        <button onClick={handleCopyAll} disabled={copying || !input.trim()} className="px-4 py-2 bg-yellow-500 text-white rounded">
+        <button onClick={handleCopyAll} disabled={copying || !previews.length} className="px-4 py-2 bg-yellow-500 text-white rounded disabled:opacity-50">
           {copying ? "Kopyalanıyor..." : "Tümünü Kopyala"}
         </button>
       </div>
+      <p className="mt-2 text-sm text-muted-foreground">Tümünü Kopyala, önizlemedeki QR kodları tek görselde birleştirir. Ayrı PNG dosyaları için ZIP indirin.</p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-6">
         {previews.map((p) => (
