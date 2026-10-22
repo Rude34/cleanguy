@@ -123,10 +123,10 @@ export default function GenerateQRClient() {
     })
 
     // create canvas with styled card area (rounded rect, title, divider)
-    const padding = 24
     const cardPadding = 20
     const cardWidth = qrSize + cardPadding * 2
     const titleFontSize = Math.max(34, Math.floor(qrSize / 7))
+    const titleFont = `600 ${titleFontSize}px "Poppins", sans-serif`
     const lineGap = 8
 
     const canvas = document.createElement("canvas")
@@ -134,24 +134,30 @@ export default function GenerateQRClient() {
 
     // ensure font is loaded, then measure title (wrap if needed)
     try {
-      await document.fonts.load(`bold ${titleFontSize}px Poppins`)
+      await document.fonts.load(titleFont)
       await document.fonts.ready
-    } catch (e) {
+    } catch {
       // ignore if Fonts API not available
     }
-    ctx.font = `bold ${titleFontSize}px "Poppins", sans-serif`
+    ctx.font = titleFont
     const maxTextWidth = cardWidth - cardPadding * 2
-    const words = text.split(" ")
+    const words = text.split(/\s+/)
     const lines: string[] = []
     let cur = ""
     for (const w of words) {
       const test = cur ? cur + " " + w : w
-      const width = ctx.measureText(test).width
-      if (width > maxTextWidth && cur) {
+      if (ctx.measureText(test).width > maxTextWidth && cur) {
         lines.push(cur)
-        cur = w
-      } else {
-        cur = test
+        cur = ""
+      }
+      if (cur) cur += " "
+      // URLs and other unbroken text must wrap too, without squeezing the glyphs.
+      for (const character of w) {
+        if (cur && ctx.measureText(cur + character).width > maxTextWidth) {
+          lines.push(cur)
+          cur = ""
+        }
+        cur += character
       }
     }
     if (cur) lines.push(cur)
@@ -182,19 +188,14 @@ export default function GenerateQRClient() {
     ctx.lineWidth = 8
     roundRect(ctx, rx, ry, cw, ch, r, false, true)
 
-    // draw title lines with stroke to increase weight and clarity
+    // Fill only: a thick outline closes counters and merges adjacent glyphs.
     ctx.fillStyle = "#000"
     ctx.textAlign = "center"
     ctx.textBaseline = "top"
-    ctx.font = `bold ${titleFontSize}px "Poppins", sans-serif`
+    ctx.font = titleFont
     const centerX = rx + cw / 2
     let y = ry + cardPadding
-    ctx.lineJoin = 'round'
     for (let i = 0; i < lines.length; i++) {
-      // stroke to make glyphs thicker and more distinguishable
-      ctx.lineWidth = 6
-      ctx.strokeStyle = "#000"
-      ctx.strokeText(lines[i], centerX, y)
       ctx.fillText(lines[i], centerX, y)
       y += titleLineHeight
     }
