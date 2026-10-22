@@ -150,7 +150,7 @@ input {
   background: #444b49;
   color: #f3a078;
   font-size: 9px;
-  font-weight: 700;
+  font-weight:400;
   text-align: center;
 }
 
@@ -177,7 +177,7 @@ input {
 .queue-intro h2 {
   margin: 6px 0 5px;
   color: #2c3330;
-  font: 700 22px Manrope, sans-serif;
+  font:400 22px Manrope, sans-serif;
 }
 
 .queue-intro p {
@@ -199,18 +199,18 @@ input {
 
 .queue-total strong {
   color: #343b37;
-  font: 800 24px Manrope, sans-serif;
+  font:400 24px Manrope, sans-serif;
 }
 
 .queue-total strong small {
   color: #a0a7a2;
-  font: 600 11px "DM Sans", sans-serif;
+  font:400 11px "DM Sans", sans-serif;
 }
 
 .queue-total > span {
   color: #8b938e;
   font-size: 7px;
-  font-weight: 700;
+  font-weight:400;
   letter-spacing: .55px;
 }
 
@@ -230,7 +230,7 @@ input {
   margin-bottom: 8px;
   color: #424a45;
   font-size: 10px;
-  font-weight: 700;
+  font-weight:400;
 }
 
 .queue-add-controls {
@@ -269,7 +269,7 @@ input {
 .queue-list-heading h3 {
   margin: 4px 0 0;
   color: #343b37;
-  font: 700 15px Manrope, sans-serif;
+  font:400 15px Manrope, sans-serif;
 }
 
 .queue-list-heading > span {
@@ -300,7 +300,7 @@ input {
   border-radius: 50%;
   background: #f0f2ef;
   color: #69716c;
-  font: 700 12px Manrope, sans-serif;
+  font:400 12px Manrope, sans-serif;
 }
 
 .queue-first .queue-position {
@@ -317,7 +317,7 @@ input {
 
 .queue-table-name > strong {
   color: #343b37;
-  font: 700 13px Manrope, sans-serif;
+  font:400 13px Manrope, sans-serif;
 }
 
 .queue-table-name > small {
@@ -334,7 +334,7 @@ input {
   background: #fff0e7;
   color: #c55b30;
   font-size: 7px;
-  font-weight: 800;
+  font-weight:400;
   letter-spacing: .4px;
 }
 
@@ -350,7 +350,7 @@ input {
   background: #f2f9f4;
   color: #357c5a;
   font-size: 9px;
-  font-weight: 700;
+  font-weight:400;
 }
 
 .queue-complete-button:hover:not(:disabled) {
@@ -432,7 +432,7 @@ input {
   background: #f0f2ef;
   color: #555e58;
   font-size: 8px;
-  font-weight: 700;
+  font-weight:400;
 }
 
 .table-history-panel {
@@ -452,7 +452,7 @@ input {
 .table-history-heading h3 {
   margin: 5px 0 4px;
   color: #303636;
-  font: 700 15px Manrope, sans-serif;
+  font:400 15px Manrope, sans-serif;
 }
 
 .table-history-heading p {
@@ -466,7 +466,7 @@ input {
   gap: 5px;
   color: #89918c;
   font-size: 8px;
-  font-weight: 700;
+  font-weight:400;
   letter-spacing: .5px;
 }
 
@@ -502,7 +502,7 @@ input {
   gap: 6px;
   color: #626a66;
   font-size: 9px;
-  font-weight: 700;
+  font-weight:400;
 }
 
 .shift-controls select,
@@ -556,13 +556,13 @@ input {
 
 .table-history-tile strong {
   color: #343b37;
-  font: 700 10px Manrope, sans-serif;
+  font:400 10px Manrope, sans-serif;
 }
 
 .table-history-tile span {
   color: #b65b34;
   font-size: 9px;
-  font-weight: 700;
+  font-weight:400;
 }
 
 .table-history-tile small {
@@ -591,13 +591,13 @@ input {
 .shift-summary > div span {
   color: #89918c;
   font-size: 8px;
-  font-weight: 700;
+  font-weight:400;
   letter-spacing: .4px;
 }
 
 .shift-summary > div strong {
   color: #343b37;
-  font: 700 16px Manrope, sans-serif;
+  font:400 16px Manrope, sans-serif;
 }
 
 .shift-summary .shift-total {
@@ -629,7 +629,7 @@ input {
 .sku-detail-heading h4 {
   margin: 4px 0 0;
   color: #303636;
-  font: 700 16px Manrope, sans-serif;
+  font:400 16px Manrope, sans-serif;
 }
 
 .sku-total {
@@ -640,12 +640,12 @@ input {
 }
 
 .sku-total strong {
-  font: 800 24px Manrope, sans-serif;
+  font:400 24px Manrope, sans-serif;
 }
 
 .sku-total span {
   font-size: 9px;
-  font-weight: 700;
+  font-weight:400;
 }
 
 .sku-category-list {
@@ -695,7 +695,7 @@ input {
   gap: 5px;
   color: #68706b;
   font-size: 9px;
-  font-weight: 700;
+  font-weight:400;
 }
 
 .staff-assignment input {
@@ -742,7 +742,7 @@ input {
   background: #fff5f3;
   color: #a74d41;
   font-size: 10px;
-  font-weight: 700;
+  font-weight:400;
 }
 
 .danger-button:hover:not(:disabled) {
@@ -781,7 +781,7 @@ input {
 
 .shift-record time {
   font-variant-numeric: tabular-nums;
-  font-weight: 700;
+  font-weight:400;
 }
 
 .shift-record-operator {

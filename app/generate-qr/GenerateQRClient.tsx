@@ -101,7 +101,7 @@ export default function GenerateQRClient() {
     const cardPadding = 20
     const cardWidth = qrSize + cardPadding * 2
     const titleFontSize = Math.max(34, Math.floor(qrSize / 7))
-    const titleFont = `600 ${titleFontSize}px "Poppins", sans-serif`
+    const titleFont = `400 ${titleFontSize}px ${getComputedStyle(document.body).fontFamily}`
     const lineGap = 8
 
     const canvas = document.createElement("canvas")
