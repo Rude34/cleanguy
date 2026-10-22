@@ -70,7 +70,9 @@ npm run dev
 
 ## Kullanım ve yenileme
 
-- Diğer kullanıcıların değişiklikleri etkileşim devam ederken 30 saniyede bir kontrol edilir. Kendi işleminden sonra ekran hemen yenilenir.
+- Diğer kullanıcıların değişiklikleri etkileşim devam ederken 10 saniyede bir kontrol edilir. Kendi işleminden sonra ekran hemen yenilenir.
+- Değişmeyen kontroller yalnızca oturumu ve `bpc_state` satır sürümünü okur; geçmiş verileri yeniden sorgulamaz veya göndermez. Her başarılı uygulama yazması aynı işlem içinde bu sürümü ilerletir. Ek SQL kurulumu gerekmez. SQL Editor üzerinden elle veri değiştirirseniz sayfayı yeniden yükleyin.
+- Veri istekleri üst üste binmez ve 20 saniyede zaman aşımına uğrar. Bu optimizasyon veri aktarımı ve sorgu yükünü azaltır; 10 saniyelik sorgular aktif kullanım boyunca Neon'un uyumasına izin vermez ve ücretsiz kota garantisi sağlamaz.
 - Gizli sekmede, internet yokken veya iki dakika etkileşim olmayınca otomatik sorgular durur. Sayfaya geri gelince/yeniden etkileşimde güncellenir. Hatalarda bekleme 120 saniyeye kadar artar ve aynı polling döngüsünde istekler üst üste binmez.
 - Bu davranış Neon'un kullanılmadığında uykuya geçebilmesine yardımcı olur. Aktif kullanıcılar sorgu göndermeye devam ederken compute tüketimi sürer. Ücretsiz planın kullanım ekranını takip et; ücretsiz kullanım sınırsız değildir.
 - Kimlik kontrolü tek kullanıcı satırını okur; operasyon ekranı parola özetleri olmadan verileri tek SQL snapshot'ında alır. Ekran mevcut geçmiş vardiya ve tarih filtrelerini korumak için kayıt geçmişini de getirir; kayıt hacmi büyüdüğünde sunucu tarafında tarih/vardiya filtrelemesi ve sayfalama eklenmelidir.

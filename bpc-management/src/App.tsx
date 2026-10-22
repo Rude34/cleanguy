@@ -34,6 +34,7 @@ const linkedProfile = (row: RecordRow) => Array.isArray(row.profiles) ? row.prof
 const recordQuantity = (row: RecordRow) => row.quantity ?? 1;
 async function api<T>(action: string, method: "GET" | "POST" = "GET", body?: unknown): Promise<T> {
   const response = await fetch(`/api/bpc?action=${action}`, {
+    signal: AbortSignal.timeout(20_000),
     method,
     headers: body ? { "Content-Type": "application/json" } : undefined,
     body: body ? JSON.stringify(body) : undefined,
@@ -101,8 +102,13 @@ export default function App() {
     window.setTimeout(() => setToast(null), 4200);
   }, []);
 
-  const refresh = useCallback(async () => {
-    const data = await api<{ profile: Profile; records: RecordRow[]; profiles: Profile[]; audit: AuditRow[]; shifts: ShiftRow[]; active_shift_id: string; waiting_tables: QueueEntry[] }>("data");
+  const revision = useRef("");
+  const pendingRefresh = useRef<Promise<void> | null>(null);
+  const fetchData = useCallback(async () => {
+    const data = await api<{ unchanged?: boolean; revision: string; profile: Profile; records: RecordRow[]; profiles: Profile[]; audit: AuditRow[]; shifts: ShiftRow[]; active_shift_id: string; waiting_tables: QueueEntry[] }>(`data&revision=${encodeURIComponent(revision.current)}`);
+    setConnected(true);
+    if (data.unchanged) return;
+    revision.current = data.revision;
     setRecords(data.records);
     setWaitingTables(data.waiting_tables);
     setShifts(data.shifts);
@@ -110,6 +116,19 @@ export default function App() {
     if (data.profile.role === "admin") { setProfiles(data.profiles); setAudit(data.audit); }
     setConnected(true);
   }, []);
+
+  const pollRefresh = useCallback(() => {
+    if (pendingRefresh.current) return pendingRefresh.current;
+    const request = fetchData().finally(() => { pendingRefresh.current = null; });
+    pendingRefresh.current = request;
+    return request;
+  }, [fetchData]);
+
+  const refresh = useCallback(async () => {
+    // A mutation must refresh AFTER any older in-flight poll has finished.
+    if (pendingRefresh.current) await pendingRefresh.current.catch(() => {});
+    await pollRefresh();
+  }, [pollRefresh]);
 
   useEffect(() => {
     let alive = true;
@@ -128,7 +147,7 @@ export default function App() {
     let timer: number | undefined;
     let running = false;
     let lastActivity = Date.now();
-    let delay = 30_000;
+    let delay = 10_000;
     const active = () => document.visibilityState === "visible" && navigator.onLine && Date.now() - lastActivity < 120_000;
     const clear = () => { window.clearTimeout(timer); timer = undefined; };
     const schedule = () => {
@@ -137,7 +156,7 @@ export default function App() {
     const poll = async () => {
       if (stopped || running || !active()) return;
       running = true;
-      try { await refresh(); delay = 30_000; }
+      try { await pollRefresh(); delay = 10_000; }
       catch { setConnected(false); delay = Math.min(delay * 2, 120_000); }
       finally { running = false; schedule(); }
     };
@@ -169,7 +188,7 @@ export default function App() {
       window.removeEventListener("offline", pause);
       events.forEach((event) => window.removeEventListener(event, activity));
     };
-  }, [session, profile, refresh]);
+  }, [session, profile, pollRefresh]);
 
   if (loading) return <div className="loading-screen"><span className="spinner" /><p>Oturum doğrulanıyor</p></div>;
   if (!session || !profile) return needsSetup
@@ -254,7 +273,7 @@ function OperatorDashboard({ profile, records, shifts, activeShiftId, refresh, n
     } catch (error) { notify("error", error instanceof Error ? error.message : "Kayıt oluşturulamadı."); }
     finally { setBusy(false); }
   }
-  return <div className="content-wrap"><section className="welcome-row"><div><span className="eyebrow">AKTİF VARDİYA</span><h2>Merhaba, {profile.display_name}</h2><p>Yeni teslimatınızı kaydedin; ekipteki herkes anında görsün.</p></div><div className="today-count"><span>VARDİYADA TESLİM EDİLEN SKU</span><strong>{today.reduce((sum, record) => sum + recordQuantity(record), 0).toString().padStart(2, "0")}</strong><small>SKU</small></div></section><section className="operator-grid"><form className="form-panel" onSubmit={submit}><div className="panel-heading"><div className="panel-icon orange"><Plus size={19} /></div><div><h3>Yeni BPC teslimatı</h3><p>Tablo, kategori ve SKU adedini girin.</p></div><span className="required-tag">GEREKLİ</span></div><label className="field-label" htmlFor="table">Masa numarası</label><div className="select-wrap"><Table2 size={18} /><select id="table" value={table} onChange={(e) => setTable(e.target.value)} required><option value="">Masa seçin</option>{tables.map((number) => <option key={number} value={number}>Masa {number}</option>)}</select><ChevronDown size={17} /></div><label className="field-label category-label">BPC kategorisi</label><div className="category-options">{categories.map((item, index) => <button type="button" key={item} className={`category-option ${category === item ? "chosen" : ""}`} onClick={() => setCategory(item)}><span className={`category-marker ${categoryClass[item]}`}><span /></span><span>{item}</span><small>0{index + 1}</small></button>)}</div><label className="field-label quantity-label" htmlFor="quantity">SKU adedi</label><input className="quantity-input" id="quantity" type="number" min="1" max="100000" step="1" inputMode="numeric" placeholder="Zorunlu" value={quantity} onChange={(e) => setQuantity(e.target.value)} required /><button className="primary-button deliver-button" disabled={!table || !category || !quantity.trim() || busy || !Number.isInteger(Number(quantity)) || Number(quantity) < 1 || Number(quantity) > 100000}>{busy ? <span className="spinner small" /> : <Check size={19} />}{busy ? "Kaydediliyor" : "BPC Verildi"}</button><p className="form-footnote"><ShieldCheck size={14} /> Adınız ve saat otomatik olarak eklenir.</p></form><section className="feed-panel"><div className="feed-heading"><div><span className="eyebrow">AKTİF VARDİYA / CANLI AKIŞ</span><h3>Son operasyonlar</h3></div><span className={`feed-live ${"live"}`}><i /> CANLI</span></div><div className="feed-tools"><button className={`filter-chip ${ownOnly ? "active" : ""}`} onClick={() => setOwnOnly(!ownOnly)}>{ownOnly ? "Kendi kayıtlarım" : "Tüm ekip"}<ChevronDown size={14} /></button><span>{visibleRecords.length} kayıt</span></div><div className="activity-list">{visibleRecords.length === 0 ? <EmptyState text="Bu vardiyada henüz BPC kaydı yok." /> : visibleRecords.slice(0, 100).map((record) => <ActivityItem key={record.id} record={record} />)}</div></section></section><TableShiftHistory records={records} shifts={shifts} activeShiftId={activeShiftId} profile={profile} refresh={refresh} notify={notify} /><section className="bottom-note"><span className="note-icon"><Radio size={17} /></span><div><strong>Canlı ekip görünümü</strong><p>Kaydedilen teslimatlar diğer operatörlere ve yöneticiye anında iletilir.</p></div><span className="note-live"><i /> {" "}Senkronize</span></section></div>;
+  return <div className="content-wrap"><section className="welcome-row"><div><span className="eyebrow">AKTİF VARDİYA</span><h2>Merhaba, {profile.display_name}</h2><p>Yeni teslimatınızı kaydedin; ekip ekranları otomatik güncellensin.</p></div><div className="today-count"><span>VARDİYADA TESLİM EDİLEN SKU</span><strong>{today.reduce((sum, record) => sum + recordQuantity(record), 0).toString().padStart(2, "0")}</strong><small>SKU</small></div></section><section className="operator-grid"><form className="form-panel" onSubmit={submit}><div className="panel-heading"><div className="panel-icon orange"><Plus size={19} /></div><div><h3>Yeni BPC teslimatı</h3><p>Tablo, kategori ve SKU adedini girin.</p></div><span className="required-tag">GEREKLİ</span></div><label className="field-label" htmlFor="table">Masa numarası</label><div className="select-wrap"><Table2 size={18} /><select id="table" value={table} onChange={(e) => setTable(e.target.value)} required><option value="">Masa seçin</option>{tables.map((number) => <option key={number} value={number}>Masa {number}</option>)}</select><ChevronDown size={17} /></div><label className="field-label category-label">BPC kategorisi</label><div className="category-options">{categories.map((item, index) => <button type="button" key={item} className={`category-option ${category === item ? "chosen" : ""}`} onClick={() => setCategory(item)}><span className={`category-marker ${categoryClass[item]}`}><span /></span><span>{item}</span><small>0{index + 1}</small></button>)}</div><label className="field-label quantity-label" htmlFor="quantity">SKU adedi</label><input className="quantity-input" id="quantity" type="number" min="1" max="100000" step="1" inputMode="numeric" placeholder="Zorunlu" value={quantity} onChange={(e) => setQuantity(e.target.value)} required /><button className="primary-button deliver-button" disabled={!table || !category || !quantity.trim() || busy || !Number.isInteger(Number(quantity)) || Number(quantity) < 1 || Number(quantity) > 100000}>{busy ? <span className="spinner small" /> : <Check size={19} />}{busy ? "Kaydediliyor" : "BPC Verildi"}</button><p className="form-footnote"><ShieldCheck size={14} /> Adınız ve saat otomatik olarak eklenir.</p></form><section className="feed-panel"><div className="feed-heading"><div><span className="eyebrow">AKTİF VARDİYA / CANLI AKIŞ</span><h3>Son operasyonlar</h3></div><span className={`feed-live ${"live"}`}><i /> CANLI</span></div><div className="feed-tools"><button className={`filter-chip ${ownOnly ? "active" : ""}`} onClick={() => setOwnOnly(!ownOnly)}>{ownOnly ? "Kendi kayıtlarım" : "Tüm ekip"}<ChevronDown size={14} /></button><span>{visibleRecords.length} kayıt</span></div><div className="activity-list">{visibleRecords.length === 0 ? <EmptyState text="Bu vardiyada henüz BPC kaydı yok." /> : visibleRecords.slice(0, 100).map((record) => <ActivityItem key={record.id} record={record} />)}</div></section></section><TableShiftHistory records={records} shifts={shifts} activeShiftId={activeShiftId} profile={profile} refresh={refresh} notify={notify} /><section className="bottom-note"><span className="note-icon"><Radio size={17} /></span><div><strong>Canlı ekip görünümü</strong><p>Aktif kullanımda ekip verileri 10 saniyede bir kontrol edilir.</p></div><span className="note-live"><i /> {" "}Senkronize</span></section></div>;
 }
 
 function TableShiftHistory({ records, shifts, activeShiftId, profile, refresh, notify }: { records: RecordRow[]; shifts: ShiftRow[]; activeShiftId: string; profile: Profile; refresh: () => Promise<void>; notify: (kind: ToastMessage["kind"], text: string) => void }) {

@@ -26,7 +26,11 @@ export async function GET(request: Request) {
     const profile = await sessionProfile(request);
     if (action === "session") return json({ profile: profile ? safeProfile(profile) : null, needsSetup: await bpc.needsSetup() });
     if (!profile) return responseError("Oturum açmanız gerekiyor.", 401);
-    return json({ profile: safeProfile(profile), ...await bpc.dashboard(profile.role === "admin") });
+    // Authenticate even unchanged polls, so disabled accounts lose access promptly.
+    // Read the version BEFORE the snapshot: a racing write can only cause an extra refresh.
+    const revision = `${profile.id}:${profile.role}:${await bpc.revision()}`;
+    if (new URL(request.url).searchParams.get("revision") === revision) return json({ unchanged: true, revision });
+    return json({ revision, profile: safeProfile(profile), ...await bpc.dashboard(profile.role === "admin") });
   } catch (error) { return handleError(error); }
 }
 

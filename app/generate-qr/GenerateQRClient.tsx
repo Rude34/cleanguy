@@ -14,8 +14,15 @@ export default function GenerateQRClient() {
   }[]>([])
   const [loading, setLoading] = useState(false)
   const [copying, setCopying] = useState(false)
+  const [generating, setGenerating] = useState(false)
+  const [copyError, setCopyError] = useState("")
+  const [sheet, setSheet] = useState<Blob | null>(null)
 
   async function handlePreview() {
+    if (generating) return
+    setGenerating(true)
+    setCopyError("")
+    setSheet(null)
     const lines = input
       .split(/\r?\n/)
       .map((l) => l.trim())
@@ -31,6 +38,13 @@ export default function GenerateQRClient() {
       }
     }
     setPreviews(res)
+    try {
+      if (res.length) setSheet(await createPreviewSheet(res.map((p) => p.dataUrl)))
+    } catch {
+      setCopyError("Toplu görsel hazırlanamadı. Daha küçük bir grup oluşturun veya ZIP indirin.")
+    } finally {
+      setGenerating(false)
+    }
   }
 
   async function handleDownloadZip() {
@@ -58,38 +72,40 @@ export default function GenerateQRClient() {
 
 
   async function handleCopySingle(dataUrl: string) {
+    setCopyError("")
     if (!navigator.clipboard?.write || typeof ClipboardItem === "undefined") {
-      alert("Tarayıcınız görsel kopyalamayı desteklemiyor. Lütfen Chrome/MSEdge kullanın.")
+      setCopyError("Tarayıcınız görsel kopyalamayı desteklemiyor. Lütfen Chrome/MSEdge kullanın.")
       return
     }
     try {
       const blob = fetch(dataUrl).then((res) => res.blob())
       const item = new ClipboardItem({ "image/png": blob })
       await navigator.clipboard.write([item])
-      alert("Görsel kopyalandı. Şimdi yapıştırabilirsiniz.")
+
     } catch (e) {
       console.error(e)
-      alert("Kopyalama başarısız. Tarayıcı izinleri veya destek sorun olabilir.")
+      setCopyError("Kopyalama başarısız. Tarayıcı izinleri veya destek sorun olabilir.")
     }
   }
 
   async function handleCopyAll() {
-    if (!previews.length || copying) return
+    if (!sheet || copying || generating) return
+    setCopyError("")
     if (!navigator.clipboard?.write || typeof ClipboardItem === "undefined") {
-      alert("Tarayıcınız görsel kopyalamayı desteklemiyor. PNG veya ZIP olarak indirebilirsiniz.")
+      setCopyError("Tarayıcınız görsel kopyalamayı desteklemiyor. PNG veya ZIP olarak indirebilirsiniz.")
       return
     }
     setCopying(true)
     try {
-      // Start the write during the click gesture, before image decoding awaits.
+      // The PNG is prepared during preview, so copying starts directly on click.
       // One PNG works even when the clipboard cannot hold multiple native items.
       await navigator.clipboard.write([
-        new ClipboardItem({ "image/png": createPreviewSheet(previews.map((p) => p.dataUrl)) }),
+        new ClipboardItem({ "image/png": sheet }),
       ])
-      alert(`${previews.length} QR kod tek görsel olarak kopyalandı. Şimdi yapıştırabilirsiniz.`)
+
     } catch (e) {
       console.error(e)
-      alert("Kopyalama başarısız. Site için pano iznini kontrol edin. Çok fazla QR varsa daha küçük gruplar halinde kopyalayın veya ZIP olarak indirin.")
+      setCopyError("Kopyalama başarısız. Site için pano iznini kontrol edin. Çok fazla QR varsa daha küçük gruplar halinde kopyalayın veya ZIP olarak indirin.")
     } finally {
       setCopying(false)
     }
@@ -274,15 +290,17 @@ export default function GenerateQRClient() {
       />
 
       <div className="mt-3 flex gap-2">
-        <button onClick={handlePreview} className="px-4 py-2 bg-gray-800 text-white rounded">Önizle</button>
+        <button onClick={handlePreview} disabled={generating} className="px-4 py-2 bg-gray-800 text-white rounded">{generating ? "Hazırlanıyor..." : "Önizle"}</button>
         <button onClick={handleDownloadZip} disabled={loading || !input.trim()} className="px-4 py-2 bg-blue-600 text-white rounded">
           {loading ? "Oluşturuluyor..." : "Tümünü ZIP İndir"}
         </button>
-        <button onClick={handleCopyAll} disabled={copying || !previews.length} className="px-4 py-2 bg-yellow-500 text-white rounded disabled:opacity-50">
+        <button onClick={handleCopyAll} disabled={copying || generating || !sheet} className="px-4 py-2 bg-yellow-500 text-white rounded disabled:opacity-50">
           {copying ? "Kopyalanıyor..." : "Tümünü Kopyala"}
         </button>
       </div>
       <p className="mt-2 text-sm text-muted-foreground">Tümünü Kopyala, önizlemedeki QR kodları tek görselde birleştirir. Ayrı PNG dosyaları için ZIP indirin.</p>
+
+      {copyError && <p role="status" className="mt-2 text-sm text-red-500">{copyError}</p>}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mt-6">
         {previews.map((p) => (

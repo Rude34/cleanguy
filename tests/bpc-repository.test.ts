@@ -40,6 +40,17 @@ test("BPC PostgreSQL: accounts, idempotency, transactions, shifts and authorizat
     });
     let recordId: string;
     let oldShift: string;
+    await t.test("poll revision changes on committed writes, not reads or rolled-back writes", async () => {
+      const before = await repo.revision();
+      await repo.dashboard(true);
+      assert.equal(await repo.revision(), before);
+      await repo.assignStaff(admin.id, 7, "Test personeli");
+      const after = await repo.revision();
+      assert.notEqual(after, before);
+      await assert.rejects(repo.assignStaff(operator.id, 7, "Yetkisiz"), /yetkisi/);
+      assert.equal(await repo.revision(), after);
+      await repo.assignStaff(admin.id, 7, "");
+    });
     await t.test("repeated concurrent submissions create one record and one audit event", async () => {
       const key = randomUUID();
       const results = await Promise.all([repo.createRecord(operator.id, 7, "Kat0 (XL)", 9, key), repo.createRecord(operator.id, 7, "Kat0 (XL)", 9, key)]);
@@ -53,12 +64,14 @@ test("BPC PostgreSQL: accounts, idempotency, transactions, shifts and authorizat
       await assert.rejects(database.query("INSERT INTO bpc_records SELECT 'duplicate', shift_id, idempotency_key, table_number, bpc_category, quantity, operator_id, status, created_at, cancelled_at, cancelled_by, cancellation_reason FROM bpc_records WHERE id = $1", [recordId]), /unique/i);
     });
     await t.test("audit failure rolls the record insertion back", async () => {
+      const revision = await repo.revision();
       const broken = createBpcRepository({ ...database, transaction: (work) => database.transaction((query) => work(async <T>(text: string, values: unknown[] = []) => {
         if (text.startsWith("INSERT INTO bpc_audit")) throw new Error("simulated audit failure");
         return query<T>(text, values);
       })) });
       await assert.rejects(broken.createRecord(operator.id, 8, "Kat0 (XL)", 1, randomUUID()), /simulated/);
       assert.equal((await repo.dashboard(true)).records.length, 1);
+      assert.equal(await repo.revision(), revision);
     });
     await t.test("operators cannot manage shifts, cancel records or manage accounts", async () => {
       await assert.rejects(repo.endShift(operator.id), /yetkisi/);

@@ -26,7 +26,11 @@ export function createBpcRepository(db: BpcDatabase) {
         if (!actor) throw new BpcError("Oturum açmanız gerekiyor.", 401);
         if (adminOnly && actor.role !== "admin") throw new BpcError("Bu işlem için yönetici yetkisi gerekiyor.", 403);
       }
-      return work(q, state);
+      const result = await work(q, state);
+      // Advance the singleton's PostgreSQL row version atomically with every write.
+      // No schema migration is needed for existing installations.
+      await q("UPDATE bpc_state SET active_shift_id = active_shift_id WHERE singleton = true");
+      return result;
     });
   }
 
@@ -38,6 +42,11 @@ export function createBpcRepository(db: BpcDatabase) {
   }
 
   return {
+    async revision() {
+      const [row] = await db.query<{ revision: string }>("SELECT xmin::text AS revision FROM bpc_state WHERE singleton = true");
+      if (!row) throw new BpcError("Veritabanı kurulumu eksik.", 503);
+      return row.revision;
+    },
     async findProfile(field: "id" | "username", value: string) {
       // field is an internal allowlist, and user values are always parameters.
       const [profile] = await db.query<BpcProfile>(`SELECT * FROM bpc_profiles WHERE ${field} = $1 AND is_active = true`, [value]);
