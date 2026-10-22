@@ -9,7 +9,7 @@ import {
 const categories = [
   "Kat0 (XL)", "Kat0 (Normal)", "Kat0 (Sağlık Güzellik)",
   "Zemin (Karışık)", "Zemin (Elektronik)", "Kat0-Zemin (Karışık)",
-  "Kat0 (Seri Ürün)", "Zemin(Su-Redbull)",
+  "Kat0 (Seri Ürün)", "Zemin(Su-Redbull)", "Zemin (Peçete)",
 ] as const;
 const tables = Array.from({ length: 35 }, (_, index) => index + 7);
 type Profile = { id: string; username: string; display_name: string; role: "admin" | "operator"; is_active: boolean; created_at?: string };
@@ -26,7 +26,7 @@ type ToastMessage = { kind: "success" | "error"; text: string };
 const categoryClass: Record<string, string> = {
   "Kat0 (XL)": "cat-xl", "Kat0 (Normal)": "cat-normal", "Kat0 (Sağlık Güzellik)": "cat-health",
   "Zemin (Karışık)": "cat-mix", "Zemin (Elektronik)": "cat-electronics", "Kat0-Zemin (Karışık)": "cat-combo",
-  "Kat0 (Seri Ürün)": "cat-series", "Zemin(Su-Redbull)": "cat-drinks",
+  "Kat0 (Seri Ürün)": "cat-series", "Zemin(Su-Redbull)": "cat-drinks", "Zemin (Peçete)": "cat-mix",
 };
 const trTime = (value: string) => new Intl.DateTimeFormat("tr-TR", { timeZone: "Europe/Istanbul", hour: "2-digit", minute: "2-digit" }).format(new Date(value));
 const trDate = (value: string) => new Intl.DateTimeFormat("tr-TR", { timeZone: "Europe/Istanbul", day: "2-digit", month: "short", year: "numeric" }).format(new Date(value));

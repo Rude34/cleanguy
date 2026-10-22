@@ -4,7 +4,7 @@ export type BpcShift = { id: string; started_at: string; ended_at: string | null
 export type BpcQueueEntry = { id: string; table_number: number; added_by: string; added_at: string };
 
 export const allowedTables = Array.from({ length: 35 }, (_, index) => index + 7);
-export const allowedCategories = ["Kat0 (XL)", "Kat0 (Normal)", "Kat0 (Sağlık Güzellik)", "Zemin (Karışık)", "Zemin (Elektronik)", "Kat0-Zemin (Karışık)", "Kat0 (Seri Ürün)", "Zemin(Su-Redbull)"];
+export const allowedCategories = ["Kat0 (XL)", "Kat0 (Normal)", "Kat0 (Sağlık Güzellik)", "Zemin (Karışık)", "Zemin (Elektronik)", "Kat0-Zemin (Karışık)", "Kat0 (Seri Ürün)", "Zemin(Su-Redbull)", "Zemin (Peçete)"];
 
 export class BpcError extends Error {
   constructor(message: string, public status = 400) { super(message); this.name = "BpcError"; }
