@@ -124,9 +124,51 @@ export default function App() {
 
   useEffect(() => {
     if (!session || !profile) return;
-    const poll = () => { void refresh().catch(() => setConnected(false)); };
-    const timer = window.setInterval(poll, 3000);
-    return () => window.clearInterval(timer);
+    let stopped = false;
+    let timer: number | undefined;
+    let running = false;
+    let lastActivity = Date.now();
+    let delay = 30_000;
+    const active = () => document.visibilityState === "visible" && navigator.onLine && Date.now() - lastActivity < 120_000;
+    const clear = () => { window.clearTimeout(timer); timer = undefined; };
+    const schedule = () => {
+      if (!stopped && active()) timer = window.setTimeout(() => { timer = undefined; void poll(); }, delay);
+    };
+    const poll = async () => {
+      if (stopped || running || !active()) return;
+      running = true;
+      try { await refresh(); delay = 30_000; }
+      catch { setConnected(false); delay = Math.min(delay * 2, 120_000); }
+      finally { running = false; schedule(); }
+    };
+    const activity = () => {
+      const wasIdle = Date.now() - lastActivity >= 120_000;
+      lastActivity = Date.now();
+      if (wasIdle && !running) { clear(); void poll(); }
+      else if (!timer && !running) schedule();
+    };
+    const resume = () => {
+      clear();
+      if (document.visibilityState === "visible" && navigator.onLine) {
+        lastActivity = Date.now();
+        if (!running) void poll();
+      }
+    };
+    const pause = () => clear();
+    schedule();
+    document.addEventListener("visibilitychange", resume);
+    window.addEventListener("online", resume);
+    window.addEventListener("offline", pause);
+    const events = ["pointerdown", "keydown", "scroll", "touchstart"] as const;
+    events.forEach((event) => window.addEventListener(event, activity, { passive: true }));
+    return () => {
+      stopped = true;
+      clear();
+      document.removeEventListener("visibilitychange", resume);
+      window.removeEventListener("online", resume);
+      window.removeEventListener("offline", pause);
+      events.forEach((event) => window.removeEventListener(event, activity));
+    };
   }, [session, profile, refresh]);
 
   if (loading) return <div className="loading-screen"><span className="spinner" /><p>Oturum doğrulanıyor</p></div>;

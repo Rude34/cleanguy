@@ -1,52 +1,88 @@
-# BPC Operasyon Merkezi
+# BPC Operasyon Merkezi — Neon / PostgreSQL
 
-BPC arayüzü Vite ile derlenir ve var olan Next.js/Vercel projesinin `/bpc-management/` alt yolunda yayınlanır. Giriş, hesap yönetimi ve BPC kayıtları mevcut Next.js sunucusundaki `/api/bpc` rotasından çalışır. Supabase kullanılmaz.
+Arayüz mevcut Next.js/Vercel sitesinin `/bpc-management/` yolunda çalışır. API `/api/bpc` yolundadır. Kullanıcılar, teslimatlar, vardiyalar, masa personeli, bekleme sırası ve denetim günlüğü PostgreSQL tablolarında tutulur. Çalışan uygulama Blob'a veya yerel JSON dosyasına erişmez.
 
-## Yerelde çalıştırma
+## 1. Neon'da ücretsiz veritabanı oluştur
 
-Gereksinimler: Node.js 20.19+ veya 22.12+ ve npm.
+1. https://console.neon.tech üzerinden hesap aç ve **Free** planında bir proje oluştur. Bölgeyi Vercel Function bölgesine yakın seç.
+2. **Connect** ekranından üretim branch'i ve veritabanını seç. **Connection pooling** açıkken PostgreSQL bağlantı adresini kopyala (host adında genellikle `-pooler` bulunur). Bağlantı adresi parola içerir; sohbetlere veya Git'e koyma.
+3. Neon **SQL Editor**'de aynı branch ve veritabanını seç. Depo kökündeki [`db/bpc-schema.sql`](../db/bpc-schema.sql) dosyasının tamamını çalıştır. Tablolar `bpc_` önekiyle oluşturulur. Dosya tekrar çalıştırılabilir; mevcut kayıtları silmez.
 
-1. Bu workspace için çalışan eski Next.js sunucularını terminallerinde `Ctrl+C` ile durdurun. Port 3000 ve `.next/dev/lock` serbest kalmalı.
-2. Depo kökünde çalıştırın:
+Şema build sırasında otomatik uygulanmaz. Yanlış branch'e veri yazılmaması için bu adım açıkça yapılır. `bpc_state` içindeki tek satır, kısa yazma transaction'larını farklı Vercel Function örnekleri arasında sıraya koyar. BPC kaydı ve denetim günlüğü birlikte commit/rollback edilir. `(operator_id, idempotency_key)` unique kısıtı aynı gönderimin ikinci kez kaydolmasını engeller.
+
+## 2. Vercel ortam değişkenlerini ayarla
+
+Mevcut `cleanguy` projesinde **Settings → Environment Variables** bölümüne aşağıdakileri **Production** için ekle:
+
+| Ad | Değer |
+| --- | --- |
+| `DATABASE_URL` | Neon üretim branch'inin pooled bağlantı adresi |
+| `BPC_SESSION_SECRET` | Uzun, rastgele oturum imzalama değeri; mevcut değeri koruyabilirsin |
+| `BPC_SETUP_KEY` | İlk yönetici hesabını oluşturmak için ayrı, uzun rastgele değer |
+
+İki farklı gizli değer üretmek için aşağıdaki komutu iki kez çalıştırabilirsin:
+
+```powershell
+node -e "console.log(require('node:crypto').randomBytes(48).toString('hex'))"
+```
+
+Bu değişkenler sunucuya aittir. `VITE_` veya `NEXT_PUBLIC_` öneki ekleme. BPC artık `BLOB_STORE_ID`, `BLOB_READ_WRITE_TOKEN` veya OIDC ayarı kullanmaz. `DATABASE_URL` yoksa Blob'a geri dönmez; açıklayıcı bir kurulum hatası döndürür.
+
+Preview ve yerel geliştirme için **ayrı Neon branch'i** oluştur ve onun bağlantısını kullan. Preview deployment'larını üretim veritabanına bağlama. Ortam değişkenlerini güncelledikten sonra yeni bir deployment gerekir.
+
+## 3. Eski Blob kayıtları varsa önce aktar
+
+Mevcut Blob verisi otomatik alınmaz. Kota nedeniyle Blob kapalıysa Neon'a geçmek o dosyanın kilidini açmaz. Mevcut kullanıcıların ve kayıtların korunması için Blob erişimi açıldığında `bpc-management/data.json` dosyasını indir.
+
+1. JSON yedeğini depo kökündeki `.data/bpc.json` dosyasına koy. `.data/` Git dışında tutulur. Yedek parola özetlerini de içerdiği için paylaşma.
+2. Üretim hedefine aktarım yaparken eski uygulamadaki veri girişlerini durdur; yedek alındıktan sonra eski depoya yazılan kayıtlar bu aktarıma girmez.
+3. Proje kökünde `.env.local` dosyasına **aktarımı yapacağın hedef** için `DATABASE_URL` ekle.
+4. Paketleri kurduktan sonra çalıştır:
 
    ```powershell
-   npm install
-   npm run dev
+   npm run db:setup
+   npm run db:import -- .data/bpc.json
    ```
 
-3. `http://localhost:3000/bpc-management/` adresini açın. İlk kullanımda yönetici kullanıcı adı ve en az 12 karakterlik parolanızı siz belirlersiniz; varsayılan hesap veya parola yoktur.
-4. Girişten sonra yönetici panelinden operatör hesaplarını oluşturun.
+Aktarım tek transaction'dır. Hata olursa tamamı geri alınır. Araç yalnızca **boş BPC tablolarına** aktarır; var olan kayıtları birleştirmez veya silmez. Boş hedefe aktarmadan önce web arayüzünden yeni yönetici oluşturma. Hesap kimlikleri, `scrypt` parola özetleri, eski vardiya kimlikleri, BPC kayıtları, sıra ve denetim günlüğü korunur. Aktarım sonrası eski kullanıcı adı/parolalarla giriş yapılabilir.
 
-Yerel kayıtlar `.data/bpc.json` dosyasına yazılır ve Git dışında tutulur. Vite’ı tek başına `npm --prefix bpc-management run dev` ile başlatırsanız arayüz `http://127.0.0.1:5173/bpc-management/` adresinde açılır, fakat API için Next.js’in 3000 portunda da çalışması gerekir.
+Aktarım yapılmadan boş bir veritabanıyla ilk yönetici hesabını oluşturursan yeni bir veri setiyle başlarsın; Blob'daki hesaplar orada otomatik görünmez. Sonradan eski verileri aktarmak için ayrı boş branch ve planlı geçiş gerekir.
 
-## Mevcut Vercel projesine yayınlama
+## 4. Deploy et ve ilk girişi yap
 
-BPC için ayrı bir statik proje oluşturmayın. Kök `npm run build`, Vite çıktısını `public/bpc-management/` içine üretir ve ardından var olan Next.js sitesini derler. Next.js catch-all route bu alt yolda `index.html` döndürür; sitenin ana sayfası ve diğer mevcut yollar değişmez.
+1. Kod değişikliklerini gözden geçirip GitHub'a gönder. Vercel'de Root Directory depo kökü, build komutu `npm run build` olarak kalsın.
+2. Production deployment **Ready** olduğunda `/bpc-management/` adresini aç.
+3. Yedeği aktardıysan eski hesabınla giriş yap. Veritabanı boşsa ilk yönetici ekranı açılır; en az 12 karakterlik parola ve Vercel'de tanımladığın `BPC_SETUP_KEY` ile hesabını oluştur.
+4. Yönetici panelinden operatör ekle. Bir BPC kaydı oluştur, sayfayı yenile ve kaydın korunduğunu kontrol et. İki hesapla sıra ve vardiya akışını da kontrol et.
+5. Eski Blob deposunu yeni sistem ve aktarılmış kayıtlar doğrulanana kadar koru.
 
-1. Vercel’de mevcut CleanGuy Tech projesini açın. **Storage → Create Store → Blob** üzerinden erişimi **Private** olan bir Blob store oluşturup bu projeye **Production** ortamında bağlayın. Bağlantıda `BLOB_STORE_ID` görünmelidir. Vercel OIDC token’ı deploy derleme ortamında env değişkeni olarak sunabilir; Function çalışırken ise request context’teki `x-vercel-oidc-token` başlığından alınır. Uygulama bunu `@vercel/oidc` helper’ıyla her server isteğinde okur ve `@vercel/blob` çağrısına sunucu tarafında verir. `VERCEL_OIDC_TOKEN` değerini manuel tanımlamayın/kopyalamayın ve `BLOB_WEBHOOK_PUBLIC_KEY` değerini storage token’ı olarak kullanmayın.
-2. **Project Settings → Environment Variables** kısmına `BPC_SESSION_SECRET` ve `BPC_SETUP_KEY` adlarında iki ayrı gizli değer ekleyin. Her biri için uzun ve tahmin edilemez değer kullanın. PowerShell ile değer üretme örneği:
+## Yerelde geliştirme
 
-   ```powershell
-   -join ((1..48) | ForEach-Object { '{0:x2}' -f (Get-Random -Maximum 256) })
-   ```
+Node.js 20.19+ veya 22.12+ gerekir. Proje kökündeki `.env.example` dosyasını `.env.local` olarak kopyalayıp geliştirme branch'inin `DATABASE_URL` değerini ekle.
 
-   Her komutu ayrı çalıştırıp bir değerini `BPC_SESSION_SECRET`, diğerini `BPC_SETUP_KEY` için kaydedin. Bunları frontend `VITE_` değişkeni yapmayın.
-3. Blob deposunun **Projects** bağlantısında doğru `cleanguy` projesi ile **Production** ortamını seçili doğrulayın. Bağlantıyı değiştirdiyseniz değişiklikten sonra yeni Production deployment oluşturun; eski deployment’a sonradan OIDC bağlamı eklenmez. Ardından `https://cleanguy.tech/bpc-management/` adresini açın. İlk yönetici hesabını ve parolasını seçip `BPC_SETUP_KEY` değerini ilk kurulum anahtarı alanına girin. İlk yönetici oluşturulunca kurulum API’si yeniden hesap oluşturmayı reddeder.
-4. Yönetici olarak giriş yapıp üç operatörü oluşturun. Kullanıcı adı ve parolaları doğrudan operatörlere iletin.
+```powershell
+npm install
+npm run db:setup
+npm run dev
+```
 
-## Güvenlik ve veri
+`http://localhost:3000/bpc-management/` adresini aç. Vite arayüzü ve Next.js API birlikte başlar. Yerelde ilk yönetici için setup anahtarı zorunlu değildir; üretimde zorunludur. Yerel JSON fallback'i yoktur.
 
-- Parolalar Node.js `scrypt` ile tuzlanıp özetlenir; oturum imzalı, HTTP-only ve SameSite çerezindedir.
-- Sunucu operatör kimliğini oturumdan alır; istemci kullanıcı kimliği veya zaman damgası gönderemez.
-- Operatör sadece teslimat kaydı açar. Hesap ekleme/devre dışı bırakma ve kayıt iptali yalnızca yöneticidedir. İptal sebebi denetim günlüğüne eklenir.
-- Masa numarası 7–41, kategori de arayüzdeki sekiz sabit seçenekle doğrulanır.
-- Yerelde JSON dosyası kullanılır. Vercel’de veriler private Blob’da kalıcı tutulur; üretimde sunucu dosya sistemine yazma fallback’i yoktur. ETag/412 çakışmasında Blob yeniden okunur ve en güncel ETag ile en fazla 8 kez, jitter’lı exponential backoff kullanılarak koşullu yazma denenir; ETag koşulu kaldırılmaz. Her BPC form gönderimi UUID idempotency key taşır; aynı operatör aynı isteği tekrar gönderirse mevcut kayıt döndürülür, yeni kayıt/audit eklenmez. Retry başarısızlığı ve nedeni sunucu loglarına credential değerleri yazılmadan kaydedilir. Blob nesne depolamadır, işlem veritabanı değildir; bu yaklaşım düşük hacimde çakışmaları yönetir, ancak daha yüksek eşzamanlı yazma veya güçlü transaction garantisi gerektiğinde PostgreSQL’e unique idempotency constraint ve transaction ile geçiş önerilir.
-- Diğer oturumların akışı üç saniyede bir yenilenir; bu uygulama WebSocket değil, basit polling kullanır.
-- Her rolün gördüğü ortak masa/SKU özetinde 7–41 arasındaki masalar seçilen güne göre SKU toplamı ve kayıt sayısıyla görünür. Masaya dokununca kategori bazında adetler ve operatör hareketleri açılır; veri üç saniyede bir güncellenir.
-- `Sıradaki masalar` sekmesi tüm kullanıcılar için ortak olan, en fazla 34 masalık bekleme sırasıdır. Masayı sıraya ekleyin; BPC tamamlanınca tikleyin. Öğe kaldırılır ve kalan sıra numaraları otomatik kayar. Aynı masa sıradayken ikinci kez eklenemez.
-- Yönetici panelindeki `Vardiyayı bitir` mevcut kayıtları ve masa personeli atamalarını geçmiş vardiyada saklar ve yeni boş bir aktif vardiya başlatır. Tüm ortacıların aktif operasyon akışı yeni vardiyaya geçer; geçmiş vardiyalar ortak masa görünümünden seçilebilir. Yönetici aktif vardiyada her masa için çalışan personelin adını kaydedebilir.
-- Yönetici operatörlerin mevcut parolalarını göremez. `Şifre yenile` yeni bir parola belirler, sunucuda özetler ve önceki oturumları geçersiz kılar.
+## Kullanım ve yenileme
 
-## Derleme
+- Diğer kullanıcıların değişiklikleri etkileşim devam ederken 30 saniyede bir kontrol edilir. Kendi işleminden sonra ekran hemen yenilenir.
+- Gizli sekmede, internet yokken veya iki dakika etkileşim olmayınca otomatik sorgular durur. Sayfaya geri gelince/yeniden etkileşimde güncellenir. Hatalarda bekleme 120 saniyeye kadar artar ve aynı polling döngüsünde istekler üst üste binmez.
+- Bu davranış Neon'un kullanılmadığında uykuya geçebilmesine yardımcı olur. Aktif kullanıcılar sorgu göndermeye devam ederken compute tüketimi sürer. Ücretsiz planın kullanım ekranını takip et; ücretsiz kullanım sınırsız değildir.
+- Kimlik kontrolü tek kullanıcı satırını okur; operasyon ekranı parola özetleri olmadan verileri tek SQL snapshot'ında alır. Ekran mevcut geçmiş vardiya ve tarih filtrelerini korumak için kayıt geçmişini de getirir; kayıt hacmi büyüdüğünde sunucu tarafında tarih/vardiya filtrelemesi ve sayfalama eklenmelidir.
+- Şifreler `scrypt` ile özetlenir. Oturum HttpOnly / SameSite=Strict çerezindedir. Şifre yenileme ve hesap devre dışı bırakma eski oturumların erişimini keser.
 
-Depo kökünde `npm run build` hem BPC arayüzünü hem mevcut Next.js sitesini üretir. BPC istemcisini tek başına doğrulamak için `Push-Location bpc-management; npm run build; Pop-Location` çalıştırabilirsiniz.
+## Kontroller
+
+```powershell
+npm run test:bpc
+npm run build
+```
+
+`test:bpc`, gerçek Neon hesabına veya ortam değişkenlerine bağlanmadan PGlite PostgreSQL motoruyla şemayı, tekrar gönderimleri, rollback'i, yetkileri, vardiyaları ve JSON aktarımını kontrol eder. Çoklu Neon bağlantılarındaki davranış ve gerçek deployment bağlantısı ayrıca canlı ortamda doğrulanmalıdır.
+
+Resmi kaynaklar: [Neon bağlantısı](https://neon.com/docs/connect/connect-from-any-app), [Neon serverless driver](https://neon.com/docs/serverless/serverless-driver), [Vercel entegrasyonu](https://neon.com/docs/guides/vercel-overview), [güncel plan sınırları](https://neon.com/pricing).

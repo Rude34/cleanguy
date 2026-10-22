@@ -7,11 +7,13 @@
     "dev": "concurrently -k -n site,bpc \"next dev\" \"npm --prefix bpc-management run dev\"",
     "build": "npm --prefix bpc-management run build && next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:setup": "node scripts/bpc-db.mjs setup",
+    "db:import": "node scripts/bpc-db.mjs import",
+    "test:bpc": "tsx --test tests/bpc-repository.test.ts"
   },
   "dependencies": {
-    "@vercel/blob": "^2.8.2",
-    "@vercel/oidc": "^4.0.2",
+    "@neondatabase/serverless": "^1.2.0",
     "file-saver": "^2.0.5",
     "gray-matter": "^4.0.3",
     "jszip": "^3.10.1",
@@ -21,17 +23,21 @@
     "qrcode": "^1.5.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "remark-gfm": "^4.0.1"
+    "remark-gfm": "^4.0.1",
+    "ws": "^8.22.0"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.11",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/ws": "^8.18.2",
     "concurrently": "^9.2.1",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",
+    "tsx": "^4.23.15",
     "typescript": "^5"
   }
 }

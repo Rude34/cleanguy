@@ -1,5 +1,7 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+BPC Operasyon Merkezi'nin Neon/PostgreSQL kurulumu ve eski Blob verilerinin aktarımı için [BPC kurulum rehberini](bpc-management/README.md) izleyin. BPC API artık sunucu tarafındaki `DATABASE_URL` bağlantısını kullanır.
+
 ## Getting Started
 
 First, run the development server:
